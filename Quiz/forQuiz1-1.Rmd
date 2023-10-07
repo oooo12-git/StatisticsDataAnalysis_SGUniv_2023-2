@@ -1,5 +1,5 @@
 ---
-title: "Quiz1대비"
+title: "Quiz1대비(1)"
 author: "김재현"
 date: "`r Sys.Date()`"
 output: html_document
@@ -34,6 +34,17 @@ order(c(12,5,9,20))
 ```
 
 **위와 같이 길이가 맞지 않은 벡터를 계산할 때 recycle rule이 적용된다.**
+
+
+rev = 순서를 반대로 바꾼다.
+
+```{r}
+rev(sort(c(2,7,3)))
+```
+```{r}
+rev(c(2,7,3))
+```
+
 
 ---
 
@@ -146,4 +157,132 @@ getSymbols함수는 야후 파이낸스에서 시세를 받아온다.
 
 ### 연산자 순서
 
+**%% 와 %/%**
+```{r}
+5 %% 2
+```
+```{r}
+5 %/% 2
+```
 
+*예시*
+```{r}
+2 * 5 %% 3 == 4
+```
+comment : * 보다 %% 가 우선
+
+```{r}
+2 * 3 ^ 4 %% 4 == 2 
+```
+comment : %% 보다 ^ 이 우선
+```{r}
+2 ^ 4 / 8 %/% 2 == 4
+```
+^ -> %%, %/% -> *, / -> + , -
+
+---
+
+### runif 함수
+
+uniform distribution (균등분포)를 이루는 랜덤값을 만들 수 있다.
+
+```{r}
+#make this example reproducible
+set.seed(5)
+
+#generate 10 random values from uniform distribution
+runif(n=10, min=50, max=100)
+```
+
+출처 : https://www.statology.org/runif-in-r/
+
+*min, max를 생략하면?*
+```{r}
+runif(10)
+```
+0과 1 사이에서 random variable 생성
+
+---
+
+### for 함수
+
+for 함수는 반복, loop에 사용한다. 
+
+```{r}
+for (i in 1:10) {
+  print(i)
+}
+```
+
+```{r}
+j <- k <- 0
+for (i in 1:3) {j <- i-5; k <- k + i*j; print(i+j+k) }
+```
+1번 print == j = -4, k = -4 , i = 1
+현재 j와 k에는 -4 가 입력된 상태
+2번 print == j = -3, k = -4 + -6 = -10 , i = 2
+현재 j와 k에는 -3, -10이 입력된 상태
+3번 print == j = -2, k = -10 + -6 = -16 , i = 3
+
+---
+
+### 인덱싱
+
+인덱싱할 때 comma를 생략하면?
+
+*데이터준비*
+```{r}
+titles <- c('Probability', 'Finance', 'Simulation')
+authors <- c('Breiman', 'Lehmann', 'Givens')
+years <- c(1968, 1983, 2005)
+books <- data.frame(title=titles, author=authors, year=years)
+head(books)
+```
+
+*문제*
+books[1:2] 와 books[1:2, ] 의 차이는?
+
+```{r}
+books[1:2]
+```
+**인덱싱할 때 comma를 생략하면 열을 선택한다.**
+
+```{r}
+books[2:3]
+```
+```{r}
+books[1:2, ]
+```
+
+*!=*
+
+```{r}
+x <- 10:15; 
+x
+```
+```{r}
+x[x != 12]
+```
+
+!= 으로 원소를 제외하고 고를 수 있다.
+
+```{r}
+x[x != 10]
+```
+
+---
+
+### 상관계수 cor
+
+두 변수간의 상관계수를 알고 싶은 경우 사용한다. default method는 pearson이다.
+
+```{r}
+x = c(1:10)
+y = c(2:11)
+plot(x,y)
+```
+```{r}
+cor(x,y)
+```
+
+## end of document

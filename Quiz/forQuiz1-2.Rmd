@@ -1,0 +1,79 @@
+---
+title: "Quiz1대비(2)"
+author: "김재현"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+### length 활용
+
+*문제*
+1000개의 0에서 1사이 uniform random number를 생성하고 0.3보다 큰값의 비율을 계산하는 R코드를 작성하시오. 
+
+```{r}
+x = runif(1000)
+length(x[x > 0.3])/1000
+```
+
+### quantile, ecdf 비교
+
+```{r}
+df1 = iris$Sepal.Length
+head(df1)
+```
+
+```{r}
+Fn = ecdf(x = df1)
+Fn(5)
+```
+```{r}
+quantile(x = df1,probs = 0.2133333)
+```
+
+qunatile과 ecdf는 역함수 관계
+
+---
+
+### 조합 combination
+
+n개의 원소를 갖는 집합에서 r개를 순서에 관계없이 뽑는 경우의수
+*순열 permutaion은 순서를 생각하고 뽑는 경우의 수*
+
+*문제*
+5C2의 값은?
+```{r}
+choose(n = 5, k = 2)
+```
+```{r}
+(5*4)/(2*1)
+```
+
+5C2 , 5개중 2개를 순서에 관계없이 뽑는 경우의 수를 보여주는 함수도 있다.
+```{r}
+combn(5,2)
+```
+
+---
+
+### 척도별 예
+
+*척도 scale 이란?*
+측정값이 속한 체계
+
+
+*척도*
+non-metric scale(비메트릭 척도) = 비교척도(comparative scale) = 범주형 데이터(categorical data)
+metric scale(메트릭 척도) = non-comparative scale = 수량자료(quantitative data)
+
+명목척도(nominal scale), 서열척도(ordinal scale) = non-metric scale
+등간척도(interval scale), 비율척도(ratio scale) = metric scale
+
+*예시*
+```{r}
+ScaleDF = data.frame(example = c('화씨 or 섭씨온도','IQ','시험점수','주가지수','선수번호','성별','이름','석차','제품 선호도 순위','소비자만족지수','무게','나이','연소득','가격','시장점유율','경제성장률'), scale = c('interval','interval','interval','ratio',rep('nominal',3), rep('ordinal',2),'interval',rep('ratio',6)))
+```
+
+---
+
+### 추이성
+

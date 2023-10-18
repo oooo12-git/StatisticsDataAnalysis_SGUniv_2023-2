@@ -69,6 +69,11 @@ Inf/Inf
 0/0
 ```
 
+
+```{r}
+log(-1, base = 10)
+```
+
 ---
 
 *문제*
@@ -215,6 +220,19 @@ runif(10)
 ```
 0과 1 사이에서 random variable 생성
 
+**문제**
+
+다음 R식의 결과가 어떠한 내용인지 설명하시오.
+
+```{r}
+as.integer(runif(100)*6+1)
+```
+
+위 R식은 1,2,3,4,5,6 중 랜덤으로 하나를 뽑는 과정을 100번 반복하는 시뮬레이션이다.  
+즉 주사위를 100번 던지는 시뮬레이션과 동일하다.
+
+Runif(100)은 0에서 1까지의 구간에서 숫자 100개를 랜덤으로 뽑는 random number generator이다. 0부터 1사이의 숫자에 6을 곱하면, 0에서 6 사이 값을 갖게 되고, 거기에 1을 더하므로 1에서 7 사이 값을 가지게 된다. 그 값에 as.integer()함수를 적용하여 정수부분만 택하게 되면 1,2,3,4,5,6 중 하나가 된다.  
+
 ---
 
 ### for 함수
@@ -283,6 +301,25 @@ x[x != 12]
 x[x != 10]
 ```
 
+*문제*
+score 라고 부르는 데이터프레임에 저장되어있는 자료 중에 성적이 70점 이상이고 성별이 여자인 경우를 따로 뽑아서 이름이 먼저 나오게 하고 그 다음 성적이 나오게 구성하라
+
+```{r}
+# 샘플 데이터 생성
+library(tidyverse)
+score = tibble('성적' = c(50,60,70,80,90,100),
+               '성별' = c('남','남','남','여','여','여'), 
+               '이름' = c('갑순','갑돌','말자','말순','복자','복순'))
+head(score)
+```
+
+```{r}
+# 조건문 + 열 지정 인덱싱
+score[score$성적>=70 & score$성별=='여',c('이름','성적')]
+```
+
+
+
 ---
 
 ### 상관계수 cor
@@ -296,6 +333,79 @@ plot(x,y)
 ```
 ```{r}
 cor(x,y)
+```
+
+---
+
+### pnorm
+
+**pnorm(quantile,mean,sd)**  
+pnorm을 통해 어떤 mean, sd를 갖고 있는 정규분포에서 특정값의 누적확률을 구할 수 있다.
+
+평균이 100이고 표본편차가 10인 정규분포로 부터 100개의 표본을 뽑아 평균을 계산한 경우, 이 표본평균의 값이 105 이상 나타날 확률을 R 함수 식으로 표현 하시오.
+
+```{r}
+1-pnorm(105,100,1)
+```
+**표본평균**의 평균에 대한 정규분포에서 특정값 이상이 나타날 확률을 구해야한다.  
+그러므로 pnorm 함수에서 표준편차(standard deviation)가 아닌 표준오차(standard error)를 사용하도록 주의해야 한다.
+
+*표준오차*  
+표준오차 SE는 표본 통계량(statistics)의 표준편차(sd)다.  
+표준오차는 표준편차를 sqrt(n)값(제곱근 square root)으로 나눈다.
+
+아래 글 참고  
+https://angeloyeo.github.io/2020/02/12/standard_error.html
+
+---
+
+### 사용자 정의함수
+
+1부터 n까지 짝수만 더하는 R함수 EvenSum(n)을 만들어보시오
+
+```{r}
+EvenSum <- function(n) {
+  if (n < 2) {
+    # Base case: If n is less than 2, there are no even numbers to sum.
+    return(0)
+  } else {
+    # Use the sum function with a sequence of even numbers from 2 to n.
+    even_numbers <- seq(from = 2, to = n, by = 2)
+    result <- sum(even_numbers)
+    return(result)
+  }
+}
+
+EvenSum(5)
+
+```
+
+### polygon, seq , dnorm, plot 함수(type인수)
+
+**간단한 polygon 함수 설명**
+https://oooo12.tistory.com/16
+
+*문제*  
+다음의 R 코드는 표준정규분포의 확률밀도함수를 그리고 -1보다 작은 영역에 색을 칠하는 그래프이다. (가) 문장과 (나) 문장의 차이에 따른 결과의 차이에 대하여 설명하여라
+
+```{r}
+xv <- seq(-3,3,0.01) # -3 ~ 3까지 0.01 간격의 벡터
+yv <- dnorm(xv) 
+plot(xv,yv,type = 'l')
+#(가)
+polygon(c(xv[xv<=-1]),c(yv[xv<=-1]),col="red")
+```
+
+
+```{r}
+plot(xv,yv,type = 'l')
+#(나)
+polygon(c(xv[xv<=-1],-1),c(yv[xv<=-1],yv[xv==-3]) ,col="red")
+```
+### matrix함수와 nrow 인수 (+ rep함수)
+
+```{r}
+matrix( rep ( c ( 1:3,5 ) , 2 ) , nrow=2)
 ```
 
 ### end of document

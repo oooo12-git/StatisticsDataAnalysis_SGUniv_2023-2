@@ -26,12 +26,12 @@ order(x)
 ```
 order = sort한 상태의 벡터내 원소가 원래 몇번째였는지 알려준다.
 
-*문제*
+<span style="color:red">*문제*</span>   
 ```{r}
 order(c(12,5,9,20))
 ```
 
-*문제*
+<span style="color:red">*문제*</span>   
 ```{r}
 1:5 + 1:2
 ```
@@ -63,7 +63,7 @@ Inf-Inf
 Inf/Inf
 ```
 
-*문제*
+<span style="color:red">*문제*</span>   
 
 ```{r}
 0/0
@@ -76,7 +76,7 @@ log(-1, base = 10)
 
 ---
 
-*문제*
+<span style="color:red">*문제*</span>   
 
 고객명단 %>% group_by（거주지역） %>% summarize（지역평균=mean（소득금액）） 
 
@@ -115,6 +115,18 @@ coplot(ozone~wind|temp, Ozone, panel = panel.smooth)
 ```
 temp를 6구간으로 나눠서 각 temp 하에 wind와 ozone의 관계를 plot해준다. ozone이 종속변수, wind가 독립변수.
 
+<span style="color:red">*문제*</span>   
+
+위 R코드 결과를 보고 해석하여라
+
+<span style="color:blue">**답**</span>  
+
+1. 기온과 오존과는 **양의 상관관계**가 존재 (즉, 기온이 올라가면 오존의 양도 증가)  
+<span style="color:red">(조건부 변수(temp)와 종속변수(ozone)과의 관계 먼저 언급)</span>  
+2. 하지만 **바람의 세기에 따라 이러한 양의 관계 정도가 매우 다르게 나타남.**<span style="color:red">(독립 변수에 의해 조건부변수와 종속변수의 관계가 달라진다는 점 언급.)</span>  
+바람이 거의 없는 경우는 높은 기울기, 바람이 약간 있는 경우는 중간 정도의 기울기, 바람이 센 경우는 낮은 기울기의 관계를 가짐.  
+3. 이러한 경우 바람세기(wind)와 기온(temp)은 **상호작용효과**가 있다고 볼 수 있다.   (또는 바람의 세기가 기온과 오존의 관계를 변화시켜주는 조절효과가 있다고 말한다.)
+
 ---
 
 ### qunatmod 패키지 getSymbols 함수
@@ -125,7 +137,7 @@ getSymbols함수는 야후 파이낸스에서 시세를 받아온다.
 
 ### length 활용
 
-*문제*
+<span style="color:red">*문제*</span>   
 1000개의 0에서 1사이 uniform random number를 생성하고 0.3보다 큰값의 비율을 계산하는 R코드를 작성하시오. 
 
 ```{r}
@@ -157,7 +169,7 @@ qunatile과 ecdf는 역함수 관계
 n개의 원소를 갖는 집합에서 r개를 순서에 관계없이 뽑는 경우의수
 *순열 permutaion은 순서를 생각하고 뽑는 경우의 수*
 
-*문제*
+<span style="color:red">*문제*</span>   
 5C2의 값은?
 ```{r}
 choose(n = 5, k = 2)
@@ -220,7 +232,7 @@ runif(10)
 ```
 0과 1 사이에서 random variable 생성
 
-**문제**
+<span style="color:red">*문제*</span>   
 
 다음 R식의 결과가 어떠한 내용인지 설명하시오.
 
@@ -270,7 +282,7 @@ books <- data.frame(title=titles, author=authors, year=years)
 head(books)
 ```
 
-*문제*
+<span style="color:red">*문제*</span>   
 books[1:2] 와 books[1:2, ] 의 차이는?
 
 ```{r}
@@ -301,7 +313,7 @@ x[x != 12]
 x[x != 10]
 ```
 
-*문제*
+<span style="color:red">*문제*</span>   
 score 라고 부르는 데이터프레임에 저장되어있는 자료 중에 성적이 70점 이상이고 성별이 여자인 경우를 따로 뽑아서 이름이 먼저 나오게 하고 그 다음 성적이 나오게 구성하라
 
 ```{r}
@@ -318,7 +330,11 @@ head(score)
 score[score$성적>=70 & score$성별=='여',c('이름','성적')]
 ```
 
+<span style="color:red">*문제*</span>   
 
+```{r}
+x <- 10:15; x[rep(c(1,2),2)]
+```
 
 ---
 
@@ -341,6 +357,8 @@ cor(x,y)
 
 **pnorm(quantile,mean,sd)**  
 pnorm을 통해 어떤 mean, sd를 갖고 있는 정규분포에서 특정값의 누적확률을 구할 수 있다.
+
+<span style="color:red">*문제*</span>   
 
 평균이 100이고 표본편차가 10인 정규분포로 부터 100개의 표본을 뽑아 평균을 계산한 경우, 이 표본평균의 값이 105 이상 나타날 확률을 R 함수 식으로 표현 하시오.
 
@@ -385,7 +403,7 @@ EvenSum(5)
 **간단한 polygon 함수 설명**
 https://oooo12.tistory.com/16
 
-*문제*  
+<span style="color:red">*문제*</span>   
 다음의 R 코드는 표준정규분포의 확률밀도함수를 그리고 -1보다 작은 영역에 색을 칠하는 그래프이다. (가) 문장과 (나) 문장의 차이에 따른 결과의 차이에 대하여 설명하여라
 
 ```{r}
@@ -402,10 +420,76 @@ plot(xv,yv,type = 'l')
 #(나)
 polygon(c(xv[xv<=-1],-1),c(yv[xv<=-1],yv[xv==-3]) ,col="red")
 ```
+
+<span style="color:red">*문제*</span>   
+
+```{r}
+seq(length=3, from=-10, to=10)
+```
+
+seq함수에서 length 인수를 사용하면 length 에 맞춰서 벡터 내 원소 숫자를 결정한다. 원소는 동일한 간격을 갖도록 한다.
+
+---
+
 ### matrix함수와 nrow 인수 (+ rep함수)
 
 ```{r}
 matrix( rep ( c ( 1:3,5 ) , 2 ) , nrow=2)
 ```
+
+---
+
+### ceiling
+
+<span style="color:red">*문제*</span>   
+
+어떤 실수 값보다 큰 최소의 정수값을 제공하는 R의 함수는 무엇인가? (예, 12.2-> 13)
+
+```{r}
+ceiling(12.2)
+```
+
+
+**round와의 차이**
+
+```{r}
+round(12.2)
+round(11.6)
+```
+
+**floor**
+
+```{r}
+floor(12.2)
+floor(11.6)
+```
+
+<span style="color:blue">ceiling = 올림</span>  
+<span style="color:black">round = 반올림</span>  
+<span style="color:red">floor = 내림</span>  
+
+---
+
+### 모자이크 plot
+
+<span style="color:red">*문제*</span>   
+
+
+1973년, 미국 연방정부는 버클리 캘리포니아 주립대학교(Universiy of California, Berkeley)가 대학원 입학과정에서 성차별이 이루어졌다고 고발하였다. 이에 대한 자료은 'berkely.csv' 파일에 저장되어 있다. 이 파일에 저장된 변수는 다음과 같다.  
+
+Admit: 입학허가상태 (Admitted/Rejected)  
+Gender: 성별 (Male/Female)  
+Dept: 6개 주요 학과 (A,B, C, D, E, F)  
+Freq: 빈도수   
+
+다음 mosaic 그림을 보고 A학과에 대한 특징을 설명하시오.
+
+![](https://i.ibb.co/YTXq2C2/Screenshot-2023-10-21-at-6-43-57-PM.png)
+
+<span style="color:blue">**답**</span>   
+
+1. A학과에는 다른 학과와 비교하여 입학률이 매우 높다. (또는 거절률이 매우 낮다)  
+2. A학과의 경우, 대부분의 지원자가 남학생이며, 여학생의 지원 비율이 매우 낮다.  
+3. A학과 여학생의 입학률이 남학생 입학률보다 높다.  
 
 ### end of document

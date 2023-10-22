@@ -5,7 +5,7 @@
 
 #### Quiz & Mid-term
 
-1.  forQuiz1-1 : quiz1 대비 정리(1) **R언어 관련** sort vs rank vs order vs rev | Inf, Nan | coplot | getSymbols | length | quantile, ecdf | combination | 연산자 순서 | runif | for | 인덱싱 | cor | pnorm + 표준오차 | 사용자 정의함수 | polygon, seq , dnorm, plot | ceiling, round, floor | 모자이크 plot 
+1.  forQuiz1-1 : Quiz1 대비 정리(1) **R언어 관련** sort vs rank vs order vs rev | Inf, Nan | coplot | getSymbols | length | quantile, ecdf | combination | 연산자 순서 | runif | for | 인덱싱 | cor | pnorm + 표준오차 | 사용자 정의함수,  | polygon, seq , dnorm, plot | ceiling, round, floor | 모자이크 plot | lapply, list | star plot | rnorm 
 
 2. forQuiz1-2 : Quiz1 대비(2) - 측정, 척도 | 신뢰성 측정방법 | 스피어만 브라운 예측공식 | 재검사 방법 | Parallel method | Cronbach's alpha | 타당성
 

@@ -3,6 +3,10 @@
 ### 통계자료분석 이군희 교수님 강의 
 *서강대학교 2023학년도 2학기*
 
+### Assignment
+
+1. 5th_Reliability : 신뢰성 분석, 크론바하 알파(Cronbach's alpha), 상호교환적, psych 패키지
+
 #### Quiz & Mid-term
 
 1.  forQuiz1-1 : Quiz1 대비 정리(1) **R언어 관련** sort vs rank vs order vs rev | Inf, Nan | coplot | getSymbols | length | quantile, ecdf | combination | 연산자 순서 | runif | for | 인덱싱 | cor | pnorm + 표준오차 | 사용자 정의함수,  | polygon, seq , dnorm, plot | ceiling, round, floor | 모자이크 plot | lapply, list | star plot | rnorm 
@@ -17,6 +21,10 @@
 연구방법론의 이해, 이군희 저, 2014, 북넷
 
 ![](https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9788998581145.jpg)
+
+데이터 사이언스 통계학, 이군희 저, 2023, 북넷
+
+![](https://contents.kyobobook.co.kr/sih/fit-in/458x0/pdt/9791186947739.jpg)
 
 
 ### end of document

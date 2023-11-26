@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="서강대학교 20121802 김재현">
+<meta name="dcterms.date" content="2023-11-14">
+
+<title>통계자료분석 Quiz2 대비</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="forQuiz2_files/libs/clipboard/clipboard.min.js"></script>
+<script src="forQuiz2_files/libs/quarto-html/quarto.js"></script>
+<script src="forQuiz2_files/libs/quarto-html/popper.min.js"></script>
+<script src="forQuiz2_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="forQuiz2_files/libs/quarto-html/anchor.min.js"></script>
+<link href="forQuiz2_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="forQuiz2_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="forQuiz2_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="forQuiz2_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="forQuiz2_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body>
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#회귀분석-간단-문제" id="toc-회귀분석-간단-문제" class="nav-link active" data-scroll-target="#회귀분석-간단-문제">회귀분석 간단 문제</a>
+  <ul class="collapse">
+  <li><a href="#문제---간단문제" id="toc-문제---간단문제" class="nav-link" data-scroll-target="#문제---간단문제">[문제 - 간단문제]</a></li>
+  </ul></li>
+  <li><a href="#p값" id="toc-p값" class="nav-link" data-scroll-target="#p값">p값</a>
+  <ul class="collapse">
+  <li><a href="#문제---p값" id="toc-문제---p값" class="nav-link" data-scroll-target="#문제---p값">[문제 - p값]</a></li>
+  </ul></li>
+  <li><a href="#결정계수" id="toc-결정계수" class="nav-link" data-scroll-target="#결정계수">결정계수</a>
+  <ul class="collapse">
+  <li><a href="#sst-ssr-sse" id="toc-sst-ssr-sse" class="nav-link" data-scroll-target="#sst-ssr-sse">SST = SSR + SSE</a></li>
+  <li><a href="#문제---결정계수" id="toc-문제---결정계수" class="nav-link" data-scroll-target="#문제---결정계수">[문제 - 결정계수]</a></li>
+  </ul></li>
+  <li><a href="#r-기초" id="toc-r-기초" class="nav-link" data-scroll-target="#r-기초">R 기초</a>
+  <ul class="collapse">
+  <li><a href="#문제" id="toc-문제" class="nav-link" data-scroll-target="#문제">[문제]</a></li>
+  </ul></li>
+  <li><a href="#귀무가설-대립가설" id="toc-귀무가설-대립가설" class="nav-link" data-scroll-target="#귀무가설-대립가설">귀무가설, 대립가설</a>
+  <ul class="collapse">
+  <li><a href="#문제-1" id="toc-문제-1" class="nav-link" data-scroll-target="#문제-1">[문제]</a></li>
+  </ul></li>
+  <li><a href="#제1종오류-제2종오류" id="toc-제1종오류-제2종오류" class="nav-link" data-scroll-target="#제1종오류-제2종오류">제1종오류, 제2종오류</a>
+  <ul class="collapse">
+  <li><a href="#문제-2" id="toc-문제-2" class="nav-link" data-scroll-target="#문제-2">[문제]</a></li>
+  </ul></li>
+  <li><a href="#단순회귀분석-분산분석" id="toc-단순회귀분석-분산분석" class="nav-link" data-scroll-target="#단순회귀분석-분산분석">단순회귀분석 분산분석</a>
+  <ul class="collapse">
+  <li><a href="#f-value" id="toc-f-value" class="nav-link" data-scroll-target="#f-value">F value</a>
+  <ul class="collapse">
+  <li><a href="#r에서-f분포를-이용한-p-value" id="toc-r에서-f분포를-이용한-p-value" class="nav-link" data-scroll-target="#r에서-f분포를-이용한-p-value">R에서 F분포를 이용한 p-value</a></li>
+  </ul></li>
+  <li><a href="#문제-3" id="toc-문제-3" class="nav-link" data-scroll-target="#문제-3">[문제]</a></li>
+  </ul></li>
+  <li><a href="#mse" id="toc-mse" class="nav-link" data-scroll-target="#mse">MSE</a>
+  <ul class="collapse">
+  <li><a href="#문제-4" id="toc-문제-4" class="nav-link" data-scroll-target="#문제-4">[문제]</a></li>
+  </ul></li>
+  <li><a href="#회귀모형-진단" id="toc-회귀모형-진단" class="nav-link" data-scroll-target="#회귀모형-진단">회귀모형 진단</a>
+  <ul class="collapse">
+  <li><a href="#문제-5" id="toc-문제-5" class="nav-link" data-scroll-target="#문제-5">[문제]</a></li>
+  </ul></li>
+  <li><a href="#회귀분석-오차항-가정" id="toc-회귀분석-오차항-가정" class="nav-link" data-scroll-target="#회귀분석-오차항-가정">회귀분석 오차항 가정</a>
+  <ul class="collapse">
+  <li><a href="#문제-6" id="toc-문제-6" class="nav-link" data-scroll-target="#문제-6">[문제]</a></li>
+  </ul></li>
+  <li><a href="#표준오차" id="toc-표준오차" class="nav-link" data-scroll-target="#표준오차">표준오차</a>
+  <ul class="collapse">
+  <li><a href="#문제-7" id="toc-문제-7" class="nav-link" data-scroll-target="#문제-7">[문제]</a></li>
+  </ul></li>
+  <li><a href="#f검정-t검정" id="toc-f검정-t검정" class="nav-link" data-scroll-target="#f검정-t검정">F검정, t검정</a>
+  <ul class="collapse">
+  <li><a href="#문제-8" id="toc-문제-8" class="nav-link" data-scroll-target="#문제-8">[문제]</a></li>
+  </ul></li>
+  <li><a href="#더미변수" id="toc-더미변수" class="nav-link" data-scroll-target="#더미변수"><del>더미변수</del></a>
+  <ul class="collapse">
+  <li><a href="#문제-9" id="toc-문제-9" class="nav-link" data-scroll-target="#문제-9">[문제]</a></li>
+  </ul></li>
+  <li><a href="#vif" id="toc-vif" class="nav-link" data-scroll-target="#vif"><del>VIF</del></a>
+  <ul class="collapse">
+  <li><a href="#문제-10" id="toc-문제-10" class="nav-link" data-scroll-target="#문제-10">[문제]</a></li>
+  </ul></li>
+  <li><a href="#다중공선성" id="toc-다중공선성" class="nav-link" data-scroll-target="#다중공선성"><del>다중공선성</del></a>
+  <ul class="collapse">
+  <li><a href="#문제-11" id="toc-문제-11" class="nav-link" data-scroll-target="#문제-11">[문제]</a></li>
+  </ul></li>
+  <li><a href="#다중회귀분석" id="toc-다중회귀분석" class="nav-link" data-scroll-target="#다중회귀분석"><del>다중회귀분석</del></a>
+  <ul class="collapse">
+  <li><a href="#문제-12" id="toc-문제-12" class="nav-link" data-scroll-target="#문제-12">[문제]</a></li>
+  </ul></li>
+  <li><a href="#다중회귀분석-분산분석표" id="toc-다중회귀분석-분산분석표" class="nav-link" data-scroll-target="#다중회귀분석-분산분석표"><del>다중회귀분석 분산분석표</del></a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">통계자료분석 Quiz2 대비</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>서강대학교 20121802 김재현 </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">November 14, 2023</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="회귀분석-간단-문제" class="level1">
+<h1>회귀분석 간단 문제</h1>
+<section id="문제---간단문제" class="level2">
+<h2 class="anchored" data-anchor-id="문제---간단문제">[문제 - 간단문제]</h2>
+<p><strong>1.회귀분석은 변수들 간에 상관관계를 분석하는 것이므로 이 보다 작은 범위의 의미를 가지는 인과관계로 확장하여 해석할 수 있다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>답: 거짓</p>
+</div>
+</div>
+</div>
+<p><strong>2.단순회귀분석에서 상관계수의 부호는 회귀계수의 부호와 항상 동일하다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 1</p>
+</div>
+</div>
+</div>
+<p><strong>3.단순회귀분석에서 절편에 대한 추정량, a 가 양수로 나왔다면?</strong></p>
+<p>1)양의 상관관계를 의미<br>
+2)x가 증가하면 y도 함께 증가한다는 의미<br>
+3)y 값은 항상 양수의 값을 갖는다는 의미<br>
+4)앞의 3개 보기 모두 해당되는 내용이 아니다.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 4</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="p값" class="level1">
+<h1>p값</h1>
+<section id="문제---p값" class="level2">
+<h2 class="anchored" data-anchor-id="문제---p값">[문제 - p값]</h2>
+<p><strong>1. p값이 크다는 의미는 데이터가 귀무가설로부터 멀리 떨어져 있다는 의미이다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 2</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="결정계수" class="level1">
+<h1>결정계수</h1>
+<p>먼저 변동의 분해를 보자.</p>
+<p><img src="./images/Variance.png" class="img-fluid"></p>
+<p>위와 같은 변동의 분해는 제곱합을 하더라도 유지된다.</p>
+<section id="sst-ssr-sse" class="level2">
+<h2 class="anchored" data-anchor-id="sst-ssr-sse">SST = SSR + SSE</h2>
+<p><img src="./images/SST.png" class="img-fluid"></p>
+<p>총변동에서 Regression에 의한 변동이 차지하는 비율, 즉 회귀모형에 의하여 설명되는 제곱합(변동)이 차지하는 비율이 높을 수록, x변수가 y를 예측하는데 중요한 변수라고 볼 수 있다.</p>
+<p>이에 결정계수 <span class="math inline">\(R^2 = SSR/SSE\)</span>가 높을수록 y를 예측하는데 좋은 회귀모형이라 볼 수 있다.</p>
+</section>
+<section id="문제---결정계수" class="level2">
+<h2 class="anchored" data-anchor-id="문제---결정계수">[문제 - 결정계수]</h2>
+<p><strong>1. 회귀분석에서 SSE=200, SSR=300 이라면 결정계수, <span class="math inline">\(R^2\)</span> 값은 얼마인가?</strong></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 0.6<br>
+해설 : 300/(200+300)</p>
+</div>
+</div>
+</div>
+<p><strong>2. 결정계수, <span class="math inline">\(R^2\)</span> 값이 1이라는 의미는 SSE 값이 0 이라는 의미이다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 1</p>
+</div>
+</div>
+</div>
+<p><strong>3. 단순회귀분석에서 상관계수가 0.64라는 의미는 두 변수의 결정계수가 0.8이라는 의미이다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 2<br>
+해설: 상관계수가 0.8 일 경우 결정계수가 0.64</p>
+</div>
+</div>
+</div>
+<p><strong>4. 결정계수, <span class="math inline">\(R^2\)</span> 값이 0이면 SSR값은 0이 되어야 한다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 1</p>
+</div>
+</div>
+</div>
+<p><strong>5. 두 변수의 상관계수가 0.8이라는 의미는 단순 회귀분석에서 두 변수의 결정계수가 0.64이라는 의미이다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답: 1<br>
+해설 : 상관계수가 0.8 일 경우 결정계수가 0.64</p>
+</div>
+</div>
+</div>
+<p><strong>6.단순 회귀분석에서 <span class="math inline">\(R^2=1\)</span>이라면?</strong></p>
+<p>1)SSE 값이 양수라는 의미<br>
+2)SSE 값이 0이라는 의미<br>
+3)SSE 값이 음수라는 의미<br>
+4)SSE 값이 1 이라는 의미</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>답 : 2</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="r-기초" class="level1">
+<h1>R 기초</h1>
+<section id="문제" class="level2">
+<h2 class="anchored" data-anchor-id="문제">[문제]</h2>
+<p><strong>1. 확률변수 X 가 정규분포 N(60, 16) 분포를 따른다고 하였을 경우 P(55≤X≤62) 확률을 R의 함수로 기술하시오.</strong></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : pnorm(62,60,4) - pnorm(55,60,4)</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="귀무가설-대립가설" class="level1">
+<h1>귀무가설, 대립가설</h1>
+<section id="문제-1" class="level2">
+<h2 class="anchored" data-anchor-id="문제-1">[문제]</h2>
+<p><strong>1. 주어진 동전이 공정한 동전인 지를 확인하기 위하여, 동전을 10번 던지는 실험을 진행하였다.</strong></p>
+<p>(1)이 문제에 적용되는 모수를 정의하고, 귀무가설과 대립가설을 기술하시오.<br>
+(2)이 문제와 관련된 확률변수를 기술하고 관련분포를 기술하시오.<br>
+(3)동전을 100번 던지는 실험에서 60번 앞면이 나타났다. p-값을 R코드 형태로 표현하시오.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>해설 : (1)모수 p: 동전 앞면이 나올 확률 Ho: p = 1/2 Hi: p <span class="math inline">\(\neq\)</span> 1/2 또는 H: p!= 1/2<br>
+(2)확률변수: 동전을 100번 던졌을 경우 나타나는 동전 앞면의 수, 또는 동전을 100번 던졌을 경우 나타나는 동전 앞면이 나타나는 비율<br>
+분포: n=100 과 p (또는 p=1/2)을 갖는 이항분포<br>
+(3)2*(1-pbinom(59, 100, 1/2)) (양측 검정이므로 꼬리 확률에 2를 곱해야 한다.)</p>
+<p>pbinom(q,size,prob)은 이항분포, binomial distribution 중, 누적분포함수 계산에 사용한다.</p>
+<p>이항분포는 셀 수 있는 값에 대한 분포, 즉 이산형 확률 분포이다.</p>
+<p>그러므로, 60번이상 앞면이 나올 확률(꼬리 확률) <span class="math inline">\(Pr(60\le X)\)</span>는 <span class="math inline">\(1-Pr(X\le 59)\)</span>이다.</p>
+</div>
+</div>
+</div>
+<p><strong>2. 동일한 조건 아래서 유의수준이 커지면 귀무가설 H0 를 기각할 가능성이 커진다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 1</p>
+</div>
+</div>
+</div>
+<p><strong>3. 가설검정에서는 ‘귀무가설이 참이라면’ 이라고 가정하고 검정통계량의 분포를 찾는다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 1</p>
+</div>
+</div>
+</div>
+<p><strong>4. 귀무가설이 기각되었다는 의미는 대립가설이 채택되었다는 의미이다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-15-contents" aria-controls="callout-15" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-15" class="callout-15-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 1</p>
+</div>
+</div>
+</div>
+<p><strong>5. 유의수준이란?</strong></p>
+<p>1)제1종오류에 대한 허용되는 최대값<br>
+2)제2종오류에 대한 허용되는 최대값<br>
+3)신뢰수준을 의미<br>
+4)p값을 의미</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 1</p>
+</div>
+</div>
+</div>
+<p><strong>6. A질환에 대하여 기존의 치료방법은 질병을 치료하는 데에 평균 15일이 걸린다고 알려져 있다. 어느 제약회사에서 새로운 치료방법을 개발하였는데, 이 새로운 치료방법은 치료기간을 15일 보다 더 줄일 수 있다고 주장하고 있다. 실제로 70명의 환자에게 새로운 치료방법을 적용하였더니 치료기간에 대한 표본평균 14.6(일)과 표본표준편차 3(일)로 나타났다. 다음 물음에 답하시오 (유의수준은 5%로 가정)</strong></p>
+<p>(1)이 문제에 적용되는 모수를 정의하고,<br>
+(2)귀무가설과 대립가설을 기술하시오<br>
+(3)p-값을 R 함수식으로 표현하시오.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>해설: (1)모수 : A질환에 대하여 치료하는데 걸리는 평균 치료기간<br>
+(2)Ho: <span class="math inline">\(\mu= 15\)</span>, H1:<span class="math inline">\(\mu&lt; 15\)</span><br>
+(3)norm(14.6, 15, 3/sqrt(70))</p>
+</div>
+</div>
+</div>
+<p><strong>7. 어느 체중감량 프로그램이 제시한 4개월에 18kg 감량” 이라는 광고 문구에 대하여 소비자 단체에서 과대 광고라는 항의가 들어왔다. 이를 판단하기 위하여 통계적 가설검정을 실시하기로 하였다. (단, 표준편차는 6kg으로 알려져 있다.)</strong></p>
+<p>(1)모수를 정의하고, 귀무가설과 대립가설을 기술하시오.<br>
+(2)검정통계량을 정하고 귀무가설이 참인 경우 어떤 분포를 갖는지 기술하시오.<br>
+(3)36명을 조사한 결과 평균 체중 감소량이 15kg으로 나타났다면 이에 대한 p값을 R의 수식으로 표현하시오.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>해설 :</p>
+<p>(1)모수 : 체중감량 프로그램을 진행한 후 4개월 후 나타난 체중 감량 평균값</p>
+<p>HO (귀무가설): <span class="math inline">\(\mu\)</span>= 18kg<br>
+H1 (대립가설) : <span class="math inline">\(\mu\)</span> &lt; 18kg</p>
+<p>(2)검정통계량: 표본평균 또는 표본평균의 표준화된 Z값 귀무가설이 참이라면, 표본평균은 µ=18kg 표준편차는 6/sqrt(36)=1 이 되는 정규분포를 따른다.</p>
+<p>(3)pnorm(15, 18, 1)</p>
+</div>
+</div>
+</div>
+<p><strong>8. 가설검정에서 의사결정을 내릴 때는 대립가설을 가정한 상태에서 귀무가설을 기각할 수 있는지 또는 기각할 수 없는지를 판단한다.</strong></p>
+<p>1)예<br>
+2)아니오</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답: 2</p>
+<p>해설: 귀무가설을 가정한 상태에서 귀무가설을 기각할 수 있는지 또는 기각할 수 없는지를 판단한다.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="제1종오류-제2종오류" class="level1">
+<h1>제1종오류, 제2종오류</h1>
+<section id="문제-2" class="level2">
+<h2 class="anchored" data-anchor-id="문제-2">[문제]</h2>
+<p><strong>1. 제1종 오류는 잘못된 귀무가설 Ho 를 기각시키지 못하는 오류를 의미한다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-20" class="callout-20-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 2</p>
+<p>해설 : 제1종 오류는 참 귀무가설 Ho 를 기각시키는 오류를 의미한다.</p>
+</div>
+</div>
+</div>
+<p><strong>2. 가설검정에서 “유의수준 5%에서 귀무가설을 기각할 수는 없다”라는 결론이 나타났다면 다음 중 어떠한 오류에 노출되어 있는가?</strong></p>
+<p>1)제1종 오류<br>
+2)제2종 오류<br>
+3)제1종 오류 와 제2종 오류<br>
+4)귀무가설을 기각하였으므로 어떠한 오류에도 노출되어 있지 않다.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답: 2</p>
+</div>
+</div>
+</div>
+<p><strong>3. 제2종오류는 어떠한 경우에 발생하는가?</strong></p>
+<p>1)귀무가설을 기각하는 경우<br>
+2)귀무가설을 기각하지 못하는 경우</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 2</p>
+</div>
+</div>
+</div>
+<p><strong>4. 은행에서 대출 심사를 진행하는 경우,</strong><br>
+</p>
+<p>(1)은행 입장에서 고려해야 하는 적절한 귀무가설과 대립가설을 세우고, 이에 대한 이유를 설명하시오<br>
+(2)제2종오류에 대하여 설명하시오.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-23" class="callout-23-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>해설 :</p>
+<ol type="1">
+<li>은행에서 대출 심사를 할 때, 대출 신청자는 실제로 대출 상환금을 갚을 수 없는 상황인데 갚을 수 있다고 잘못 판단하여 대출을 실행하는 경우 매우 심각한 손실이 발생한다. 따라서 이러한 오류를 제 1종 오류로 잡는 것이 타당하며 이에 따라 다음과 같이 가설을 설정할수 있다.</li>
+</ol>
+<p>귀무가설: 대출 신청자는 대출 상환금을 갚지 못할 것이다.<br>
+대립가설: 대출 신청자는 대출 상환금을 갚을 것이다.</p>
+<ol start="2" type="1">
+<li>제2종 오류는 거짓인 귀무가설을 기각시키지 못하는 오류로, 이 경우 대출 상환금을 잘 갚을 대출 신청자를 대출 신청자는 대출 상환금을 갚지 못할 것이다’라고 잘못 판단하여 대출을 거절하는 의사결정을 내리는 오류라고 볼 수 있다.</li>
+</ol>
+</div>
+</div>
+</div>
+<p><strong>5. 제2종 오류는 참인 귀무가설을 기각시키는 오류 의미한다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-24-contents" aria-controls="callout-24" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-24" class="callout-24-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 2</p>
+<p>해설 : 제2종 오류는 거짓인 귀무가설을 기각시키지 못하는 오류임.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="단순회귀분석-분산분석" class="level1">
+<h1>단순회귀분석 분산분석</h1>
+<section id="f-value" class="level2">
+<h2 class="anchored" data-anchor-id="f-value">F value</h2>
+<p><span class="math inline">\(F값 = \frac{MSR}{MSE} \sim F(1,n-2)\)</span></p>
+<p>F값은 분자의 자유도(위에서 1)와 분모(n-2)의 자유도에 따라 분포가 달라진다.</p>
+<section id="r에서-f분포를-이용한-p-value" class="level3">
+<h3 class="anchored" data-anchor-id="r에서-f분포를-이용한-p-value">R에서 F분포를 이용한 p-value</h3>
+<pre><code>pf(q,df1,df2) #df= degree of freedom</code></pre>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#예시</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">-</span><span class="fu">pf</span>(<span class="dv">5</span>,<span class="dv">1</span>,<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1113672</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="문제-3" class="level2">
+<h2 class="anchored" data-anchor-id="문제-3">[문제]</h2>
+<p><strong>1.다음 R의 결과를 보고 물음에 답 하여라.</strong></p>
+<pre><code>lm(y~x)
+
+Call: Im(formula = y ~ x) 
+
+Coefficients:
+
+(Intercept) x 
+
+  2         1
+ 
+anova(lm(y~x))  
+Analysis of Variance Table  
+Response: y  
+           Df Sum Sq Mean Sq F value Pr(&gt;F)  
+x           1    10    10       ?    0.1114  
+Residuals   3    6      2</code></pre>
+<ol type="1">
+<li>총 몇 개의 자료로 분석이 진행되었는가?<br>
+</li>
+<li>추정된 회귀방정식을 기술하시오.<br>
+</li>
+<li>SST 값은 얼마인가?<br>
+</li>
+<li>F value에 해당하는 값은 얼마인가<br>
+</li>
+<li>0.1114 값이 어떻게 계산되는지 R함수로 표현하시오.<br>
+</li>
+<li>모형의 오차, e의 분산에 대한 추정값은 얼마인가?<br>
+</li>
+<li>결정계수 <span class="math inline">\(R^2\)</span>는 얼마인가? (수식으로 표현하여도 됨)<br>
+</li>
+<li>위의 분석결과를 보고 어떠한 결론을 내릴 수 있는가?</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-25-contents" aria-controls="callout-25" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-25" class="callout-25-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>해설:</p>
+<ol type="1">
+<li>5개 자료<br>
+</li>
+<li>y = 2 + 1x<br>
+</li>
+<li>SST=16<br>
+</li>
+<li>5<br>
+</li>
+<li>1-pf(10/2,1,3)<br>
+</li>
+<li><span class="math inline">\(\varepsilon\)</span>의 분산에 대한 추정값: MSE = 2<br>
+</li>
+<li><span class="math inline">\(R^2\)</span> = 10/16<br>
+</li>
+<li>유의수준 5%에서 x는 y에 영향을 미치는 유의미한 변수라고 볼 수 없다. (x와 y는 관계가 없다)</li>
+</ol>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="mse" class="level1">
+<h1>MSE</h1>
+<section id="문제-4" class="level2">
+<h2 class="anchored" data-anchor-id="문제-4">[문제]</h2>
+<p><strong>1.회귀모형에서 오차항, <span class="math inline">\(\varepsilon\)</span>에 대한 분산인 <span class="math inline">\(\sigma^2\)</span> 의 추정량은 MSE 이다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-26-contents" aria-controls="callout-26" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-26" class="callout-26-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 1</p>
+</div>
+</div>
+</div>
+<p><del><strong>2.총 125개 관측값에서 10개의 독립변수로 구성된 회귀모형의 경우 MSE에 대한 자유도는 얼마인가?</strong></del></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-27-contents" aria-controls="callout-27" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-27" class="callout-27-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 114</p>
+<p>해설 : SST 124, SSR: 10, SSE: 114</p>
+</div>
+</div>
+</div>
+<p><del><strong>3.10개의 자료를 이용하여 3개의 독립변수로 구성된 회귀분석을 진행하였을 경우, SSE에 대한 자유도는 얼마인가?</strong></del></p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-28-contents" aria-controls="callout-28" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-28" class="callout-28-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 6</p>
+<p>해설:SST에 대한 자유도 9 SSR에 대한 자유도 3 SSE에 대한 자유도 6</p>
+</div>
+</div>
+</div>
+<p><strong>4.모형의 표준오차에 대한 추정량은 MSE이다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-29-contents" aria-controls="callout-29" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-29" class="callout-29-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 2<br>
+해설 : 오차항의 분산에 대한 추정량이다.</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="회귀모형-진단" class="level1">
+<h1>회귀모형 진단</h1>
+<section id="문제-5" class="level2">
+<h2 class="anchored" data-anchor-id="문제-5">[문제]</h2>
+<p><strong>1.회귀분석 모형을 진단하는 과정에서 점검해야 하는 항목을 모두 고르시오.</strong></p>
+<ol type="1">
+<li>다중공선성<br>
+</li>
+<li>잔차에 대한 분석<br>
+</li>
+<li>잔차에 대한 등분산성 검토<br>
+</li>
+<li>잔차에 대한 outier 검토<br>
+</li>
+<li>위의 4가지 과정이 모두 필요하다.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-30-contents" aria-controls="callout-30" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-30" class="callout-30-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>답: 5</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="회귀분석-오차항-가정" class="level1">
+<h1>회귀분석 오차항 가정</h1>
+<section id="문제-6" class="level2">
+<h2 class="anchored" data-anchor-id="문제-6">[문제]</h2>
+<p><strong>1.회귀분석 모형의 오차항에 대한 가정을 기술한 것으로 틀린 문장을 모두 고르시오.</strong></p>
+<ol type="1">
+<li>오차항의 평균은 0<br>
+</li>
+<li>오차항은 정규분포를 따른다<br>
+</li>
+<li>오차항들은 서로 독립적 관계를 가져야 한다.<br>
+</li>
+<li>오차항들의 분산은 독립변수의 값에 관계없이 일정하여야 한다.<br>
+</li>
+<li>위의 모든 문장은 옳은 문장이다.</li>
+</ol>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-31-contents" aria-controls="callout-31" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-31" class="callout-31-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>답 : 5</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="표준오차" class="level1">
+<h1>표준오차</h1>
+<section id="문제-7" class="level2">
+<h2 class="anchored" data-anchor-id="문제-7">[문제]</h2>
+<p><strong>1. 회귀모형에서 오차항, e에 대한 표준편차는 모형의 표준오차를 의미한다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-32-contents" aria-controls="callout-32" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-32" class="callout-32-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 1</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="f검정-t검정" class="level1">
+<h1>F검정, t검정</h1>
+<section id="문제-8" class="level2">
+<h2 class="anchored" data-anchor-id="문제-8">[문제]</h2>
+<p><strong>1.독립변수가 1개인 단순회귀분석에서 F-검정과 t검정은 동일한 검정이므로 두 검정에 대한 p값은 항상 동일하다.</strong></p>
+<p>1)참<br>
+2)거짓</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="정답">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-33-contents" aria-controls="callout-33" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+정답
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-33" class="callout-33-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>정답 : 참</p>
+</div>
+</div>
+</div>
+<hr>
+</section>
+</section>
+<section id="더미변수" class="level1">
+<h1><del>더미변수</del></h1>
+<section id="문제-9" class="level2">
+<h2 class="anchored" data-anchor-id="문제-9">[문제]</h2>
+<ol type="1">
+<li>10개 브랜드에 대한 차이(즉, 10개 카테고리)를 알고자 회귀분석에서 더미변수를 적용한다면 더미변수는 9개 필요하다.</li>
+</ol>
+<ol type="1">
+<li>참</li>
+<li>거짓</li>
+</ol>
+<p>정답: 참 해설 : 9개의 더미변수를 설정하면 나머지 한 개 브랜드는 결정 나버리기 때문에 9개 더미변수만 있으면 된다.</p>
+<ol start="2" type="1">
+<li>범주형 자료를 회귀분석의 독립변수에 적용할 경우 무엇을 만들어 주어야 하나?</li>
+</ol>
+<ol type="1">
+<li>절편항</li>
+<li>더미변수</li>
+<li>명목형 변수</li>
+<li>상수항</li>
+</ol>
+<p>정답 : 2</p>
+<hr>
+</section>
+</section>
+<section id="vif" class="level1">
+<h1><del>VIF</del></h1>
+<section id="문제-10" class="level2">
+<h2 class="anchored" data-anchor-id="문제-10">[문제]</h2>
+<ol type="1">
+<li>lm(y~<span class="math inline">\(x_1+x_2+x_3\)</span>) 모형에서 <span class="math inline">\(x_1\)</span>에 대한 VIF 값은 lm(<span class="math inline">\(x_1+x_2+x_3\)</span>) 모형에 대한 <span class="math inline">\(R^2\)</span> 값을 기반으로 계산되어 진다.</li>
+</ol>
+<ol type="1">
+<li>참<br>
+</li>
+<li>거짓</li>
+</ol>
+<p>정답 : 참</p>
+<hr>
+</section>
+</section>
+<section id="다중공선성" class="level1">
+<h1><del>다중공선성</del></h1>
+<section id="문제-11" class="level2">
+<h2 class="anchored" data-anchor-id="문제-11">[문제]</h2>
+<p>1.높은 다중공선성을 갖는다는 의미는 독립변수들끼리 서로 상관관계가 높다는 것을 의미한다.</p>
+<ol type="1">
+<li>참<br>
+</li>
+<li>거짓</li>
+</ol>
+<p>정답 : 참</p>
+<hr>
+</section>
+</section>
+<section id="다중회귀분석" class="level1">
+<h1><del>다중회귀분석</del></h1>
+<section id="문제-12" class="level2">
+<h2 class="anchored" data-anchor-id="문제-12">[문제]</h2>
+<ol type="1">
+<li>다음의 다중회귀모형 추정식에서, x1 이 1단위 증가하고 x2는 변화가 없다면 y는 얼마 만큼 증가하는가? <span class="math inline">\(\hat{y} = 7 + 2x_1 + 9x_2 + 3x_1x_2\)</span></li>
+</ol>
+<ol type="1">
+<li>2</li>
+<li>9</li>
+<li>3</li>
+<li>x2 값에 따라 변화량이 달라지므로 판단할 수 없다.</li>
+</ol>
+<p>정답 : 4</p>
+<ol start="2" type="1">
+<li>다음은 lm(판매량~입사성적*성별)에 대한 R 분석 결과이다. (여기서 성별은 남자, 여자로 구분되어 있다)</li>
+</ol>
+<p>Coefficients: Estimate Std.Error t value Pr(&gt;t) (Intercept) 4.3250 1.4237 3.038 0.022865 <em>입사성적 2.3750 0.2681 8.859 0.000115</em> ** 성별 남자 7.4250 2.2526 3.296 0.016487 <em>입사성적: 성별 남자-1.2250 0.3597 -3.406 0.014394</em></p>
+<p>Signif codes: 0 **** 0.001 ** 0.01 * 0.05: 0.1 * 1 Residual standard error: 1.072 on 6 degrees of freedom Multiple R-squared: 0.9558, Adjusted R-squared: 0.9337 F-statistic: 43.22 on 3 and 6 DF, p-value: 0.0001861</p>
+<ol type="1">
+<li>총 몇 개의 자료로 분석이 이루어 졌는가?</li>
+<li>모형에 대한 자유도는 얼마인가?</li>
+<li>이 모형에서 적용된 Reference Group은?</li>
+<li>입사성적이 70점의 남자의 경우 예측값을 R 수식으로 표현하시오.</li>
+</ol>
+<p>해설:</p>
+<ol type="1">
+<li>10개 자료<br>
+</li>
+<li>3<br>
+</li>
+<li>성별: 여자<br>
+</li>
+<li>4.3250+ 23750$<span class="math inline">\(70 + 7.4250 - 1.2250\)</span>$70</li>
+</ol>
+<hr>
+</section>
+</section>
+<section id="다중회귀분석-분산분석표" class="level1">
+<h1><del>다중회귀분석 분산분석표</del></h1>
+<p>12 다음은 다중회귀분석에 대한 간단한 분산분석표이다. Y를 종속변수, X1, X2…를 독립변수라고 하였을 경우, 다음 물음에 답하시오. 분산분석표 자유도 제곱합 모형 4 400 오차 6 600</p>
+<ol type="1">
+<li>분석에 사용된 표본 크기는 얼마인가?</li>
+<li>결정계수는 얼마인가? (수식으로 표현하여도 됨)</li>
+<li>분산분석표에서 나오는 통계적 가설검정에 사용되는 F분포의 자유도를 기술하시오.</li>
+<li>이 회귀모형에서 고려된 독립변수는 몇개 인가?</li>
+<li>만일 분산분석표에서 F-검정에 대한 p값이 0.001로 나타났다면, 이는 어떠한 의미인가?</li>
+<li>분산분석표의 F-검정과 p값과 회귀계수 값에 나타나는 x의 t검정에 대한 p값은 같은가?</li>
+<li>모형에 대한 표준오차 (Standard Error)는 얼마인가? (수식으로 표현하여도 됨)</li>
+<li>mymodel 객체가 회귀분석 모형으로 저장되어 있을 경우, 회귀계수의 95%신뢰구간을 요청하는 R코드를 기술하시오.</li>
+</ol>
+<p>해설 : (1) n=11 (2) <span class="math inline">\(R^2=400/1000=0.4\)</span> (3) F(4.6) 분포 (4) 4개 (5) 4개의 독립변수 중 최소한 한 개는 통계적으로 유의하게 종속변수 Y에 영향을 미친다. (6) 다중 회귀분석이므로 p값이 동일하지 않다. (7) sqrt(600/6) = 10 (8) confint(my.model, level=0.95)</p>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

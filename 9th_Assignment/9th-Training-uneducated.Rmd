@@ -1,0 +1,34 @@
+---
+title: "9th-Training-uneducated"
+author: "동그랑땡"
+date: "`r Sys.Date()`"
+mainfont: AppleGothic
+monofont: AppleGothic
+fontsize: 11pt
+output:
+  html_document:
+    toc: True
+  pdf_document:
+    latex_engine: xelatex
+output: html_document
+---
+
+## [예제 4] 이항분포를 이용한 모비율 검정
+
+미국 대통령 선거에서 민주당은 현재 대통령 후보자의 득표율이 45%는 될 것이라고 예상하고 있다.\
+**이를 확인하기 위하여** 유권자 200명을 조사하였더니 81명이 현재 민주당 대통령 후보자를 지지한다 고 응답하였다. 유의수준 1%에서 민주당의 주장이 맞는지에 대한 가설검정을 이항분포 기반으로 진행 하여라.
+
+45% 득표율 = status quo 양측검정(귀무가설이 맞는지 확인을 위한 검정이기 때문.)
+
+H0 : p = 0.45\
+H1 : p $neq$ 0.45
+
+n = 200
+
+이항검정 = binomial test
+
+```{r}
+binom.test(81, 200, 0.45, alternative="two.sided")
+```
+
+p값이 0.2269로 유의수준 1%보다 크기 때문에, 귀무가설을 기각할 수 없다.

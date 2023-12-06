@@ -1,0 +1,221 @@
+---
+title: "통계자료분석 팀프로젝트 - Reyemes Affiar"
+author: "2023-2학기 통계자료분석 1조 김재현"
+format: html
+---
+
+```{r setup}
+#| label: 사용할 패키지 불러오기
+#| output: false
+# 사용할 패키지 불러오기
+library(readxl)
+library(dplyr)
+```
+
+```{r}
+#| label: 데이터 불러오기
+# 데이터 불러오기
+
+rawdata = read_excel("./Reyeme2.xls",)
+data1 = as.data.frame(rawdata)
+```
+
+```{r}
+#| label: 결측값 존재 확인
+# 결측값 존재 확인
+
+sum(is.na(data1))
+```
+
+:::{.callout-note}
+결측값 8개 존재.
+:::
+
+```{r}
+#| label: 결측값 있는 행 확인
+# 결측값 있는 행 확인
+
+which(rowSums(is.na(data1)) > 0)
+
+```
+
+:::{.callout-note}
+결측값은 모두 UNIT 열 값이다. UNIT는 건물내 특정 주거공간을 나타내는 호수(ex 101호, 102호)이다. Reyem Affiar가 구매하려는 건물의 UNIT는 주어져있지 않기 때문에 Reyem Affiar가 구매하려는 건물 가격을 추정하는데에 UNIT 변수는 사용하지 않을 것으로 예상한다. 그러므로 결측값은 처리하지 않고 최대한 데이터를 보존하고자 한다.
+:::
+
+```{r}
+#| label: 데이터 클래스 확인
+# 각 독립변수의 클래스 확인
+
+summary(data1)
+```
+
+:::{.callout-note}
+UNIT 변수와 함께, 바로 선형회귀분석에 사용할 수 없는 character, Date 클래스를 가진 변수 Area, Address, FirstDate, CloseDate를 제외하고 선형회귀분석을 진행한다.
+:::
+
+```{r}
+#| label: M1 = 모든 변수 사용, M2 = M1에서 UNIT, AREA, Address, FirstDate, CloseDate 제외
+# M1 = 모든 변수 사용, M2 = M1에서 UNIT, AREA, Address, FirstDate, CloseDate 제외
+
+
+M1 = lm(SalePrice ~ .  ,data1)
+M2 = update(M1, . ~ . - Unit - Area -Address - FirstDate - CloseDate)
+summary(M2)
+```
+
+:::{.callout-note}
+
+Sale Price와 직접적으로 관련되어 다른 변수들의 중요성을 가리는 변수인 Price1(FirstPrice), Price2(LastPrice)를 제외한다.
+
+:::
+
+```{r}
+#| label: M2에서 Price1, Price2 제외
+# M2에서 Price1, Price2 제외, M3 회귀분석 결과확인
+
+
+M3 = update(M2, . ~ . - Price1 - Price2)
+summary(M3)
+```
+
+::: {.callout-important}
+**이제 각 변수를 살펴보면서 논리적으로 변수를 조정하거나, 종속변수(Sale Price)를 예측하는데에 성능을 개선만한 새로운 변수를 추가한다. **
+:::
+
+### Area Code 부터 살펴보면...
+
+Area Code와 Sale Price 간의 선형성을 만들어줄 필요가 있다. 주어진 Area code는 의미가 없다.(임의로 막 갖다 붙힌것 같다.) Area는 집값에 영향을 주는 neighborhood(문제에서 professional appraiser가 건물의 가치를 평가하는 기준으로 제시된 것)와 관련이 크기 때문에 주요한 독립변수가 될 것으로 생각한다. 때문에, Area Code는 평균(혹은 median) Sale Price가 낮은 Area 부터 순차적으로 Area Code를 매기는 편이 좋을 것이라 생각한다.
+
+일단 Area와 Area Code가 잘못 매칭된 93행과, 101행의 Area Code를 변경해준다.(데이터 오류 수정)
+
+```{r}
+#| label: 데이터 프레임 복사
+# 데이터 프레임 복사(기존 데이터와의 비교를 위해)
+
+data2 = data1
+```
+
+```{r}
+# | label: 잘못 매칭된 AreaCode 변경
+# 잘못 매칭된 AreaCode 변경
+
+data2$AreaCode[93] = 10 # N 지역
+data2$AreaCode[101] = 4 # CP 지역
+```
+
+
+```{r}
+#| label: AreaCode 별로 평균 SalePrice를 계산
+# AreaCode 별로 평균 SalePrice를 계산
+
+average_prices <- data2 %>%
+                   group_by(AreaCode) %>%
+                   summarise(AveragePrice = mean(SalePrice))
+average_prices <- average_prices %>%
+                  arrange(desc(AveragePrice))
+
+average_prices
+
+```
+
+
+```{r}
+#| label: AreaCode 별로 SalePrice의 중앙값을 계산
+# AreaCode 별로 SalePrice의 중앙값을 계산
+
+median_prices <- data2 %>%
+                  group_by(AreaCode) %>%
+                  summarise(MedianPrice = median(SalePrice))
+median_prices <- median_prices %>%
+                  arrange(MedianPrice)
+median_prices
+```
+
+:::{.callout-note}
+Robust한 median 기준으로 Area Code를 재배열하는 것이 나을 것으로 보인다.
+
+Area의 Sales Price의 median이 낮으면, 낮은(작은) AreaCode를 부여한다.
+(ex. 가장 낮은 Sales Price median을 가진 AreaCode = 0 )
+
+:::
+
+```{r}
+#| label: 새로운 AreaCode 부여
+# 새로운 AreaCode 부여
+
+median_prices$AreaCodeMod = c(0:15)
+median_prices
+```
+
+
+```{r}
+#| label: 새로운 AreaCode 부여 - 데이터 변경
+# 새로운 AreaCode 부여 - 데이터 변경
+
+for (i in 1:nrow(data2)) {
+    if (data2$AreaCode[i] == 5) {
+        data2$AreaCode[i] = 15
+    } else if (data2$AreaCode[i] == 8) {
+        data1$AreaCode[i] = 14
+    } else if (data2$AreaCode[i] == 16) {
+        data2$AreaCode[i] = 13
+    } else if (data2$AreaCode[i] == 1) {
+        data1$AreaCode[i] = 12
+    } else if (data2$AreaCode[i] == 2) {
+        data2$AreaCode[i] = 11
+    } else if (data2$AreaCode[i] == 13) {
+        data2$AreaCode[i] = 10
+    } else if (data2$AreaCode[i] == 9) {
+        data2$AreaCode[i] = 9
+    } else if (data2$AreaCode[i] == 11) {
+        data2$AreaCode[i] = 8
+    } else if (data2$AreaCode[i] == 6) {
+        data2$AreaCode[i] = 7
+    } else if (data2$AreaCode[i] == 14) {
+        data2$AreaCode[i] = 6
+    } else if (data2$AreaCode[i] == 7) {
+        data2$AreaCode[i] = 5
+    } else if (data2$AreaCode[i] == 10) {
+        data2$AreaCode[i] = 4
+    } else if (data2$AreaCode[i] == 4) {
+        data2$AreaCode[i] = 3
+    } else if (data2$AreaCode[i] == 12) {
+        data2$AreaCode[i] = 2
+    } else if (data2$AreaCode[i] == 3) {
+        data2$AreaCode[i] = 1
+    } else if (data2$AreaCode[i] == 15) {
+        data2$AreaCode[i] = 0
+    }
+}
+```
+
+```{r}
+#| label: data2 를 활용하여 모든 변수를 사용하는 M1_2, M1_2에서 몇개 변수를 제외한 M2_2
+# data2 의 모든 변수를 사용하여 회귀분석하는 M1_2, M1_2에서 몇개 변수를 제외하고 회귀분석한 M2_2
+
+M1_2 = lm(SalePrice ~ . , data2)
+M2_2 = update(M1_2, . ~ .- Unit - Area -Address - FirstDate - CloseDate - Price1 - Price2)
+summary(M2_2)
+```
+
+### AreaCode 변경에 따른 효과 확인 
+
+```
+#기존 AreaCode 사용
+
+              Estimate Std. Error t value Pr(>|t|)    
+AreaCode    -1492.017    472.452  -3.158  0.00170 ** 
+Adjusted R-squared:  0.8167 
+
+
+# 새로운 AreaCode 사용
+
+              Estimate Std. Error t value Pr(>|t|)    
+AreaCode      1862.786    504.546   3.692  0.00025 ***
+Adjusted R-squared:  0.8181
+
+```
+::: {.callout-note}
+AreaCode를 변경했을 때 p-value가 하락하여 통계적으로 더 유의해진 것을 확인할 수 있다. 또한 전체 회귀분석 모형의 $adj-R^2$도 소폭 상승하여 성능이 개선된 것을 확인할 수 있다.
+:::

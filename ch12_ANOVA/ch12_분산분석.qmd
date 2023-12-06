@@ -1,12 +1,16 @@
 ---
 title: "ch12_분산분석"
 format: html
+toc: true
+toc-depth: 5
 ---
 
 ```{r setup, include=FALSE}
 library(ggpubr)
+library(DescTools)
 ```
 
+## 분산분석, 분산분석표, 분산분석 모형
 
 ### 예제2
 
@@ -159,3 +163,82 @@ OneWay$coefficients
 ```
 
 여기서 레퍼런스그룹은 알파벳, 가나다 순으로 첫번째 수준이 레퍼런스 그룹이 된다. 항상 레퍼런스 그룹을 먼저 식별해야 한다. 여기선 부산이 레퍼런스 그룹이다.
+
+## 다중비교와 사후검정
+
+### 예제5
+
+![](./images/4.png)
+
+```{r}
+#| label: put data
+Mon = c(150, 120, 130, 160, 140)
+Tue = c(170, 180, 190, 200, 160)
+Wed = c(130, 140, 150, 160, 170)
+Thr = c(200, 180, 170, 190, 210)
+Fri = c(160, 170, 150, 140, 180)
+Sat = c(220, 230, 210, 240, 220)
+Sun = c(250, 240, 230, 220, 210)
+df1 = data.frame(Mon, Tue, Wed, Thr, Fri ,Sat, Sun)
+```
+
+#### 분산분석 및 분산분석표
+
+```{r}
+#| label: tidy data로 변경
+
+df2 = stack(df1)
+```
+
+```{r}
+#| label: 분산분석
+
+M1 = aov(values ~ ind,df2)
+anova(M1)
+```
+
+F 검정에 의한 p-value가 5% 유의 수준 보다 작기 때문에 요일별 평균값이 동일하다는 귀무가설을 기각한다. 이제 사후검정을 통해 어떤 요일의 평균값이 어떻게 다른지 확인해봐야 한다.
+
+#### 분산분석 모형 모수 확인 - 효과모형 이용
+
+```{r}
+model.tables(M1)
+```
+
+모수를 봤을 때, 토요일과 일요일에 웹사이트 방문자수가 많다. 이제 다중비교를 통해 통계적 유의성을 확인해보자.
+
+#### 다중비교, 사후검정
+
+##### Tukey HSD
+
+```{r}
+#| label: TukeyHSD
+
+TukeyHSD(M1)
+```
+
+##### Dunnett
+
+```{r}
+#| label: Dunnett 검정
+
+DescTools::DunnettTest(values~ind,df2,control = "Tue") # 레퍼런스 그룹을 화요일로 선택
+```
+
+##### Fisher LSD
+
+```{r}
+#| label: Fisher LSD 검정
+DescTools::PostHocTest(M1, method = "lsd")
+```
+
+##### Bonferroni
+
+```{r}
+#| label: Bonferroni
+
+DescTools::PostHocTest(M1, method = "bonferroni")
+```
+
+
+## 분산분석 가정에 대한 검토

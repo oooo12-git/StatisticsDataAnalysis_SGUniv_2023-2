@@ -68,13 +68,64 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="ch12_분산분석_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="ch12_분산분석_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
-<body class="fullcontent">
+<body>
 
 <div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
-
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#분산분석-분산분석표-분산분석-모형" id="toc-분산분석-분산분석표-분산분석-모형" class="nav-link active" data-scroll-target="#분산분석-분산분석표-분산분석-모형">분산분석, 분산분석표, 분산분석 모형</a>
+  <ul>
+  <li><a href="#예제2" id="toc-예제2" class="nav-link" data-scroll-target="#예제2">예제2</a>
+  <ul>
+  <li><a href="#분산분석-데이터-구조---예제2" id="toc-분산분석-데이터-구조---예제2" class="nav-link" data-scroll-target="#분산분석-데이터-구조---예제2">분산분석 데이터 구조 - 예제2</a></li>
+  <li><a href="#분산분석을-하려면-tidy-data로" id="toc-분산분석을-하려면-tidy-data로" class="nav-link" data-scroll-target="#분산분석을-하려면-tidy-data로">분산분석을 하려면 tidy data로!</a></li>
+  <li><a href="#ggpubr-패키지를-활용한-점도표" id="toc-ggpubr-패키지를-활용한-점도표" class="nav-link" data-scroll-target="#ggpubr-패키지를-활용한-점도표">ggpubr 패키지를 활용한 점도표</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#일원배치-분산분석" id="toc-일원배치-분산분석" class="nav-link" data-scroll-target="#일원배치-분산분석">일원배치 분산분석</a>
+  <ul>
+  <li><a href="#예제3" id="toc-예제3" class="nav-link" data-scroll-target="#예제3">예제3</a>
+  <ul>
+  <li><a href="#완전랜덤화-실험" id="toc-완전랜덤화-실험" class="nav-link" data-scroll-target="#완전랜덤화-실험">완전랜덤화 실험</a></li>
+  </ul></li>
+  <li><a href="#예제-4" id="toc-예제-4" class="nav-link" data-scroll-target="#예제-4">예제 4</a>
+  <ul>
+  <li><a href="#분산분석표-anova-aov" id="toc-분산분석표-anova-aov" class="nav-link" data-scroll-target="#분산분석표-anova-aov">분산분석표 anova() + aov()</a></li>
+  <li><a href="#분산분석-모형의-모수에-대한-추정값" id="toc-분산분석-모형의-모수에-대한-추정값" class="nav-link" data-scroll-target="#분산분석-모형의-모수에-대한-추정값">분산분석 모형의 모수에 대한 추정값</a>
+  <ul class="collapse">
+  <li><a href="#수준별-평균모형" id="toc-수준별-평균모형" class="nav-link" data-scroll-target="#수준별-평균모형">수준별 평균모형</a></li>
+  <li><a href="#효과-모형" id="toc-효과-모형" class="nav-link" data-scroll-target="#효과-모형">효과 모형</a></li>
+  <li><a href="#레퍼런스-그룹이-있는-효과-모형" id="toc-레퍼런스-그룹이-있는-효과-모형" class="nav-link" data-scroll-target="#레퍼런스-그룹이-있는-효과-모형">레퍼런스 그룹이 있는 효과 모형</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#다중비교와-사후검정" id="toc-다중비교와-사후검정" class="nav-link" data-scroll-target="#다중비교와-사후검정">다중비교와 사후검정</a>
+  <ul>
+  <li><a href="#예제5" id="toc-예제5" class="nav-link" data-scroll-target="#예제5">예제5</a>
+  <ul>
+  <li><a href="#분산분석-및-분산분석표" id="toc-분산분석-및-분산분석표" class="nav-link" data-scroll-target="#분산분석-및-분산분석표">분산분석 및 분산분석표</a></li>
+  <li><a href="#분산분석-모형-모수-확인---효과모형-이용" id="toc-분산분석-모형-모수-확인---효과모형-이용" class="nav-link" data-scroll-target="#분산분석-모형-모수-확인---효과모형-이용">분산분석 모형 모수 확인 - 효과모형 이용</a></li>
+  <li><a href="#다중비교-사후검정" id="toc-다중비교-사후검정" class="nav-link" data-scroll-target="#다중비교-사후검정">다중비교, 사후검정</a>
+  <ul class="collapse">
+  <li><a href="#tukey-hsd" id="toc-tukey-hsd" class="nav-link" data-scroll-target="#tukey-hsd">Tukey HSD</a></li>
+  <li><a href="#dunnett" id="toc-dunnett" class="nav-link" data-scroll-target="#dunnett">Dunnett</a></li>
+  <li><a href="#fisher-lsd" id="toc-fisher-lsd" class="nav-link" data-scroll-target="#fisher-lsd">Fisher LSD</a></li>
+  <li><a href="#bonferroni" id="toc-bonferroni" class="nav-link" data-scroll-target="#bonferroni">Bonferroni</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#분산분석-가정에-대한-검토" id="toc-분산분석-가정에-대한-검토" class="nav-link" data-scroll-target="#분산분석-가정에-대한-검토">분산분석 가정에 대한 검토</a></li>
+  </ul>
+</nav>
+</div>
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
@@ -94,6 +145,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
+<section id="분산분석-분산분석표-분산분석-모형" class="level2">
+<h2 class="anchored" data-anchor-id="분산분석-분산분석표-분산분석-모형">분산분석, 분산분석표, 분산분석 모형</h2>
 <section id="예제2" class="level3">
 <h3 class="anchored" data-anchor-id="예제2">예제2</h3>
 <p><img src="./images/1.png" class="img-fluid"></p>
@@ -190,6 +243,368 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tbody>
 </table>
 </section>
+<section id="분산분석을-하려면-tidy-data로" class="level4">
+<h4 class="anchored" data-anchor-id="분산분석을-하려면-tidy-data로">분산분석을 하려면 tidy data로!</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">=</span> <span class="fu">stack</span>(df1)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>df2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   values  ind
+1    62.6 Grp1
+2    77.9 Grp1
+3    65.2 Grp1
+4    65.4 Grp1
+5    60.0 Grp1
+6    78.6 Grp2
+7    78.4 Grp2
+8    76.9 Grp2
+9    79.5 Grp2
+10   82.1 Grp2
+11   86.1 Grp3
+12   83.5 Grp3
+13   86.1 Grp3
+14   90.1 Grp3
+15   89.2 Grp3</code></pre>
+</div>
+</div>
+</section>
+<section id="ggpubr-패키지를-활용한-점도표" class="level4">
+<h4 class="anchored" data-anchor-id="ggpubr-패키지를-활용한-점도표">ggpubr 패키지를 활용한 점도표</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggline</span>(df2, <span class="at">x =</span> <span class="st">"ind"</span>, <span class="at">y =</span> <span class="st">"values"</span>, <span class="at">add =</span> <span class="fu">c</span>(<span class="st">"mean_sd"</span>, <span class="st">"jitter"</span>), <span class="at">title =</span> <span class="st">"Data in ANOVA model"</span>, <span class="at">ylab =</span><span class="st">""</span>, <span class="at">xlab =</span> <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="ch12_분산분석_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>jitter는 점이 겹치지 않도록 양 옆으로 점을 분산시킨다.</p>
+<p>아래는 jitter 옵션이 적용되지 않은 그래프</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggline</span>(df2, <span class="at">x =</span> <span class="st">"ind"</span>, <span class="at">y =</span> <span class="st">"values"</span>, <span class="at">add =</span> <span class="fu">c</span>(<span class="st">"mean_sd"</span>), <span class="at">title =</span> <span class="st">"Data in ANOVA model"</span>, <span class="at">ylab =</span><span class="st">""</span>, <span class="at">xlab =</span> <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="ch12_분산분석_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>mean_sd 옵션은 평균과 표준편차를 표시하고 평균을 선으로 연결한다.</p>
+<p>아래는 mean_sd 옵션을 제외한 그래프(모든 add 옵션 없음)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggline</span>(df2, <span class="at">x =</span> <span class="st">"ind"</span>, <span class="at">y =</span> <span class="st">"values"</span>, <span class="at">title =</span> <span class="st">"Data in ANOVA model"</span>, <span class="at">ylab =</span><span class="st">""</span>, <span class="at">xlab =</span> <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="ch12_분산분석_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>jitter만 적용시킨 그래프는 아래와 같다.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggline</span>(df2, <span class="at">x =</span> <span class="st">"ind"</span>, <span class="at">y =</span> <span class="st">"values"</span>, <span class="at">add =</span> <span class="st">"jitter"</span>, <span class="at">title =</span> <span class="st">"Data in ANOVA model"</span>, <span class="at">ylab =</span><span class="st">""</span>, <span class="at">xlab =</span> <span class="st">""</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="ch12_분산분석_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+</section>
+<section id="일원배치-분산분석" class="level2">
+<h2 class="anchored" data-anchor-id="일원배치-분산분석">일원배치 분산분석</h2>
+<p>one-way ANOVA는 완전랜덤화 실험설계(CRD: Complete Randomized Design)를 가정한다.</p>
+<section id="예제3" class="level3">
+<h3 class="anchored" data-anchor-id="예제3">예제3</h3>
+<p><img src="./images/2.png" class="img-fluid"></p>
+<section id="완전랜덤화-실험" class="level4">
+<h4 class="anchored" data-anchor-id="완전랜덤화-실험">완전랜덤화 실험</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>x <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">20</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>x1 <span class="ot">=</span> <span class="fu">sample</span>(x,<span class="dv">5</span>) <span class="co"># 1에서 20까지의 숫자중 5개의 표본을 무작위로 뽑는다.</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>x1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  2 16 14  5 17</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12</span>)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>x2 <span class="ot">=</span> <span class="fu">sample</span>(x[<span class="sc">-</span>x1],<span class="dv">5</span>) <span class="co"># 1에서 20까지의 숫자중 x1을 제외한 5개의 표본을 무작위로 뽑는다.</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>x2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  3 12  9 13  7</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>x3 <span class="ot">=</span> <span class="fu">sample</span>(x[<span class="sc">-</span><span class="fu">c</span>(x1,x2)],<span class="dv">5</span>) <span class="co"># 1에서 20까지의 숫자중 x1, x2를 제외한 5개의 표본을 무작위로 뽑는다.</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>x3</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  4 15  6 11 10</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">12</span>)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>x4 <span class="ot">=</span> <span class="fu">sample</span>(x[<span class="sc">-</span><span class="fu">c</span>(x1,x2,x3)],<span class="dv">5</span>) <span class="co"># 1에서 20까지의 숫자중 x1, x2, x3를 제외한 5개의 표본을 무작위로 뽑는다.</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>x4</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1]  8 20 18  1 19</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="예제-4" class="level3">
+<h3 class="anchored" data-anchor-id="예제-4">예제 4</h3>
+<p><img src="./images/3.png" class="img-fluid"></p>
+<section id="분산분석표-anova-aov" class="level4">
+<h4 class="anchored" data-anchor-id="분산분석표-anova-aov">분산분석표 anova() + aov()</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>Group <span class="ot">=</span> <span class="fu">rep</span>(<span class="fu">c</span>(<span class="st">"Seoul"</span>,<span class="st">"Busan"</span>,<span class="st">"Gwangju"</span>), <span class="at">each =</span> <span class="dv">3</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>X <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">550</span>,<span class="dv">600</span>,<span class="dv">650</span>,<span class="dv">520</span>,<span class="dv">570</span>,<span class="dv">620</span>,<span class="dv">500</span>,<span class="dv">580</span>,<span class="dv">540</span>)</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>OneWay <span class="ot">=</span> <span class="fu">aov</span>(X <span class="sc">~</span> Group) <span class="co"># aov()로 분산분석 실행 및 결과를 OneWay 객체에 저장, 일원 배치 분산분석이므로 독립변수 1개.</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(OneWay) <span class="co">#anova()로 분산분석표 요청</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+
+Response: X
+          Df Sum Sq Mean Sq F value Pr(&gt;F)
+Group      2   5400    2700  1.2273 0.3574
+Residuals  6  13200    2200               </code></pre>
+</div>
+</div>
+</section>
+<section id="분산분석-모형의-모수에-대한-추정값" class="level4">
+<h4 class="anchored" data-anchor-id="분산분석-모형의-모수에-대한-추정값">분산분석 모형의 모수에 대한 추정값</h4>
+<section id="수준별-평균모형" class="level5">
+<h5 class="anchored" data-anchor-id="수준별-평균모형">수준별 평균모형</h5>
+<p><span class="math display">\[X_{ij}=\mu_j+\epsilon_{ij}\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">aggregate</span>(X, <span class="at">by =</span> <span class="fu">list</span>(Group), mean) <span class="co"># 수준별 평균모형(첫번째 형태의 분산분석 모형)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Group.1   x
+1   Busan 570
+2 Gwangju 540
+3   Seoul 600</code></pre>
+</div>
+</div>
+<p>by 옵션은 list 값을 요구하기 때문에, Group을 리스트로 만들어 준다. 위 코드를 말로 표현하자면, ‘X의 값을 Group별로 평균한다.’ 로 표현할 수 있다.</p>
+</section>
+<section id="효과-모형" class="level5">
+<h5 class="anchored" data-anchor-id="효과-모형">효과 모형</h5>
+<p><span class="math display">\[X_{ij} = \mu + \tau_j + \epsilon_{ij}\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.tables</span>(OneWay) <span class="co"># 효과모형</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Tables of effects
+
+ Group 
+Group
+  Busan Gwangju   Seoul 
+      0     -30      30 </code></pre>
+</div>
+</div>
+<p><span class="math inline">\(\mu\)</span>에 대한 추정량은 제공되지 않는다. 그러나 각 그룹의 <span class="math inline">\(\tau_j\)</span>의 추정량은 제공된다. 그러므로 <span class="math inline">\(\mu\)</span>에 대한 추정량이 570임을 알 수 있다.(Busan의 <span class="math inline">\(\tau_j\)</span>가 0 이므로 <span class="math inline">\(\mu\)</span> = Busan 그룹의 평균)</p>
+</section>
+<section id="레퍼런스-그룹이-있는-효과-모형" class="level5">
+<h5 class="anchored" data-anchor-id="레퍼런스-그룹이-있는-효과-모형">레퍼런스 그룹이 있는 효과 모형</h5>
+<p><span class="math display">\[X_{ij} = \mu_1 + \tau_j + \epsilon_{ij}\]</span></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>OneWay<span class="sc">$</span>coefficients</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> (Intercept) GroupGwangju   GroupSeoul 
+         570          -30           30 </code></pre>
+</div>
+</div>
+<p>여기서 레퍼런스그룹은 알파벳, 가나다 순으로 첫번째 수준이 레퍼런스 그룹이 된다. 항상 레퍼런스 그룹을 먼저 식별해야 한다. 여기선 부산이 레퍼런스 그룹이다.</p>
+</section>
+</section>
+</section>
+</section>
+<section id="다중비교와-사후검정" class="level2">
+<h2 class="anchored" data-anchor-id="다중비교와-사후검정">다중비교와 사후검정</h2>
+<section id="예제5" class="level3">
+<h3 class="anchored" data-anchor-id="예제5">예제5</h3>
+<p><img src="./images/4.png" class="img-fluid"></p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>Mon <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">150</span>, <span class="dv">120</span>, <span class="dv">130</span>, <span class="dv">160</span>, <span class="dv">140</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>Tue <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">170</span>, <span class="dv">180</span>, <span class="dv">190</span>, <span class="dv">200</span>, <span class="dv">160</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>Wed <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">130</span>, <span class="dv">140</span>, <span class="dv">150</span>, <span class="dv">160</span>, <span class="dv">170</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>Thr <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">200</span>, <span class="dv">180</span>, <span class="dv">170</span>, <span class="dv">190</span>, <span class="dv">210</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>Fri <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">160</span>, <span class="dv">170</span>, <span class="dv">150</span>, <span class="dv">140</span>, <span class="dv">180</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>Sat <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">220</span>, <span class="dv">230</span>, <span class="dv">210</span>, <span class="dv">240</span>, <span class="dv">220</span>)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>Sun <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">250</span>, <span class="dv">240</span>, <span class="dv">230</span>, <span class="dv">220</span>, <span class="dv">210</span>)</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>df1 <span class="ot">=</span> <span class="fu">data.frame</span>(Mon, Tue, Wed, Thr, Fri ,Sat, Sun)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="분산분석-및-분산분석표" class="level4">
+<h4 class="anchored" data-anchor-id="분산분석-및-분산분석표">분산분석 및 분산분석표</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>df2 <span class="ot">=</span> <span class="fu">stack</span>(df1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>M1 <span class="ot">=</span> <span class="fu">aov</span>(values <span class="sc">~</span> ind,df2)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">anova</span>(M1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Analysis of Variance Table
+
+Response: values
+          Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+ind        6  37040  6173.3  26.511 2.516e-10 ***
+Residuals 28   6520   232.9                      
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+<p>F 검정에 의한 p-value가 5% 유의 수준 보다 작기 때문에 요일별 평균값이 동일하다는 귀무가설을 기각한다. 이제 사후검정을 통해 어떤 요일의 평균값이 어떻게 다른지 확인해봐야 한다.</p>
+</section>
+<section id="분산분석-모형-모수-확인---효과모형-이용" class="level4">
+<h4 class="anchored" data-anchor-id="분산분석-모형-모수-확인---효과모형-이용">분산분석 모형 모수 확인 - 효과모형 이용</h4>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">model.tables</span>(M1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Tables of effects
+
+ ind 
+ind
+Mon Tue Wed Thr Fri Sat Sun 
+-42  -2 -32   8 -22  42  48 </code></pre>
+</div>
+</div>
+<p>모수를 봤을 때, 토요일과 일요일에 웹사이트 방문자수가 많다. 이제 다중비교를 통해 통계적 유의성을 확인해보자.</p>
+</section>
+<section id="다중비교-사후검정" class="level4">
+<h4 class="anchored" data-anchor-id="다중비교-사후검정">다중비교, 사후검정</h4>
+<section id="tukey-hsd" class="level5">
+<h5 class="anchored" data-anchor-id="tukey-hsd">Tukey HSD</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">TukeyHSD</span>(M1)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = values ~ ind, data = df2)
+
+$ind
+        diff        lwr        upr     p adj
+Tue-Mon   40   9.385599  70.614401 0.0047067
+Wed-Mon   10 -20.614401  40.614401 0.9408934
+Thr-Mon   50  19.385599  80.614401 0.0003072
+Fri-Mon   20 -10.614401  50.614401 0.3952842
+Sat-Mon   84  53.385599 114.614401 0.0000000
+Sun-Mon   90  59.385599 120.614401 0.0000000
+Wed-Tue  -30 -60.614401   0.614401 0.0576183
+Thr-Tue   10 -20.614401  40.614401 0.9408934
+Fri-Tue  -20 -50.614401  10.614401 0.3952842
+Sat-Tue   44  13.385599  74.614401 0.0016009
+Sun-Tue   50  19.385599  80.614401 0.0003072
+Thr-Wed   40   9.385599  70.614401 0.0047067
+Fri-Wed   10 -20.614401  40.614401 0.9408934
+Sat-Wed   74  43.385599 104.614401 0.0000005
+Sun-Wed   80  49.385599 110.614401 0.0000001
+Fri-Thr  -30 -60.614401   0.614401 0.0576183
+Sat-Thr   34   3.385599  64.614401 0.0221334
+Sun-Thr   40   9.385599  70.614401 0.0047067
+Sat-Fri   64  33.385599  94.614401 0.0000066
+Sun-Fri   70  39.385599 100.614401 0.0000013
+Sun-Sat    6 -24.614401  36.614401 0.9955049</code></pre>
+</div>
+</div>
+</section>
+<section id="dunnett" class="level5">
+<h5 class="anchored" data-anchor-id="dunnett">Dunnett</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>DescTools<span class="sc">::</span><span class="fu">DunnettTest</span>(values<span class="sc">~</span>ind,df2,<span class="at">control =</span> <span class="st">"Tue"</span>) <span class="co"># 레퍼런스 그룹을 화요일로 선택</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  Dunnett's test for comparing several treatments with a control :  
+    95% family-wise confidence level
+
+$Tue
+        diff    lwr.ci     upr.ci    pval    
+Mon-Tue  -40 -66.37374 -13.626263 0.00159 ** 
+Wed-Tue  -30 -56.37374  -3.626263 0.02105 *  
+Thr-Tue   10 -16.37374  36.373737 0.79726    
+Fri-Tue  -20 -46.37374   6.373737 0.19178    
+Sat-Tue   44  17.62626  70.373737 0.00055 ***
+Sun-Tue   50  23.62626  76.373737 9.3e-05 ***
+
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="fisher-lsd" class="level5">
+<h5 class="anchored" data-anchor-id="fisher-lsd">Fisher LSD</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>DescTools<span class="sc">::</span><span class="fu">PostHocTest</span>(M1, <span class="at">method =</span> <span class="st">"lsd"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  Posthoc multiple comparisons of means : Fisher LSD 
+    95% family-wise confidence level
+
+$ind
+        diff      lwr.ci      upr.ci    pval    
+Tue-Mon   40  20.2307106  59.7692894 0.00028 ***
+Wed-Mon   10  -9.7692894  29.7692894 0.30900    
+Thr-Mon   50  30.2307106  69.7692894 1.7e-05 ***
+Fri-Mon   20   0.2307106  39.7692894 0.04756 *  
+Sat-Mon   84  64.2307106 103.7692894 1.9e-09 ***
+Sun-Mon   90  70.2307106 109.7692894 4.4e-10 ***
+Wed-Tue  -30 -49.7692894 -10.2307106 0.00429 ** 
+Thr-Tue   10  -9.7692894  29.7692894 0.30900    
+Fri-Tue  -20 -39.7692894  -0.2307106 0.04756 *  
+Sat-Tue   44  24.2307106  63.7692894 9.2e-05 ***
+Sun-Tue   50  30.2307106  69.7692894 1.7e-05 ***
+Thr-Wed   40  20.2307106  59.7692894 0.00028 ***
+Fri-Wed   10  -9.7692894  29.7692894 0.30900    
+Sat-Wed   74  54.2307106  93.7692894 2.4e-08 ***
+Sun-Wed   80  60.2307106  99.7692894 5.1e-09 ***
+Fri-Thr  -30 -49.7692894 -10.2307106 0.00429 ** 
+Sat-Thr   34  14.2307106  53.7692894 0.00149 ** 
+Sun-Thr   40  20.2307106  59.7692894 0.00028 ***
+Sat-Fri   64  44.2307106  83.7692894 3.4e-07 ***
+Sun-Fri   70  50.2307106  89.7692894 6.8e-08 ***
+Sun-Sat    6 -13.7692894  25.7692894 0.53917    
+
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+<section id="bonferroni" class="level5">
+<h5 class="anchored" data-anchor-id="bonferroni">Bonferroni</h5>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>DescTools<span class="sc">::</span><span class="fu">PostHocTest</span>(M1, <span class="at">method =</span> <span class="st">"bonferroni"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+  Posthoc multiple comparisons of means : Bonferroni 
+    95% family-wise confidence level
+
+$ind
+        diff     lwr.ci     upr.ci    pval    
+Tue-Mon   40   7.761622  72.238378 0.00598 ** 
+Wed-Mon   10 -22.238378  42.238378 1.00000    
+Thr-Mon   50  17.761622  82.238378 0.00036 ***
+Fri-Mon   20 -12.238378  52.238378 0.99873    
+Sat-Mon   84  51.761622 116.238378 3.9e-08 ***
+Sun-Mon   90  57.761622 122.238378 9.2e-09 ***
+Wed-Tue  -30 -62.238378   2.238378 0.09004 .  
+Thr-Tue   10 -22.238378  42.238378 1.00000    
+Fri-Tue  -20 -52.238378  12.238378 0.99873    
+Sat-Tue   44  11.761622  76.238378 0.00194 ** 
+Sun-Tue   50  17.761622  82.238378 0.00036 ***
+Thr-Wed   40   7.761622  72.238378 0.00598 ** 
+Fri-Wed   10 -22.238378  42.238378 1.00000    
+Sat-Wed   74  41.761622 106.238378 5.0e-07 ***
+Sun-Wed   80  47.761622 112.238378 1.1e-07 ***
+Fri-Thr  -30 -62.238378   2.238378 0.09004 .  
+Sat-Thr   34   1.761622  66.238378 0.03119 *  
+Sun-Thr   40   7.761622  72.238378 0.00598 ** 
+Sat-Fri   64  31.761622  96.238378 7.2e-06 ***
+Sun-Fri   70  37.761622 102.238378 1.4e-06 ***
+Sun-Sat    6 -26.238378  38.238378 1.00000    
+
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="분산분석-가정에-대한-검토" class="level2">
+<h2 class="anchored" data-anchor-id="분산분석-가정에-대한-검토">분산분석 가정에 대한 검토</h2>
 </section>
 
 </main>

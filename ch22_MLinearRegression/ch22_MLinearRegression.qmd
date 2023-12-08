@@ -1,0 +1,654 @@
+---
+title: "ch22_MLinearRegression"
+author: 서강대학교 20121802 김재현
+date: "2023-12-07"
+format: html
+toc: true
+---
+
+```{r setup, include = FALSE}
+library(readxl)
+library(PerformanceAnalytics)
+library(car)
+library(gvlma)
+library(MASS)
+library(leaps)
+```
+
+
+## 예제 8 - 다중회귀모형의 회귀방정식
+
+**(참고) 예제로 생성된 교재에서 사용한 데이터 내용**
+
+```
+   x1 x2    y
+1   4 14 50.75980
+2   1 16 41.39093
+3   4 13 23.55423
+4   5 19 62.02147
+5   1 18 59.09995
+6   7 18 77.93622
+7  10 12 44.25575
+8   4 14 58.86981
+9   8 19 82.66984
+10 10 13 79.87974
+```
+
+```{r}
+#| label: 데이터 읽기 - 예제 8
+# 데이터 읽기 - 예제 8
+
+rawdata = read_excel("data.xlsx")
+```
+
+```{r}
+#| label: 다중회귀분석 진행 - 예제8
+# 다중회귀분석 진행 - 예제8
+M4 = lm(y ~ x1 + x2,rawdata)
+M4
+```
+
+이를 회귀방정식으로 나타내면 다음과 같다.
+
+$$\hat{y} = -35.617 + 3.716x_1 + 4.718x_2$$
+
+## 예제 9 - 다중회귀모형의 분산분석표, 변수에 대한 가설검정
+
+![](./images/예제9.png)
+
+```{r}
+#| label: 데이터 불러오기 - 예제 9
+# 데이터 불러오기 - 예제 9
+df1 = read_excel("아파트매매.xlsx", sheet='Data', range='B4:E30')
+```
+
+:::{.callout-note}
+R에서는 다중회귀모형에 대한 분산분석표(아래 그림 참고)를 제공하지 않는다. 그러므로, 완전 모형과 Null model간 검정을 이용하여 분산분석표를 작성한다.(Null model은 독립변수를 포함하지 않으므로 제곱합이 다중회귀 분석 모형의 SSE라 볼 수 있다. Null model과 Full model을 비교하는 F검정이 곧 전반검정 - '모든 독립변수가 필요없다'는 귀무가설을 기각하는지 여부를 따지는 검정 - 이 된다.)
+:::
+![](./images/예제9-분산분석표.png)
+
+```{r}
+#| label: 완전모형, 부분모형(Rooms 변수만 제외한 모형 - 1 , Area 변수만 사용하는 모형 - 2), null model
+# 완전모형, 부분모형(Rooms 변수만 제외한 모형 - 1 , Area 변수만 사용하는 모형 - 2), null model
+
+FullModel = lm(Sales ~ . , df1)
+PartialModel1 = update(FullModel, .~.-Rooms)
+PartialModel2 = lm(Sales ~ Area , df1)
+NullModel = lm(Sales ~ 1 , df1)
+```
+
+```{r}
+#| label: 다중회귀모형 완전모형에 대한 분산분석표(각 회귀 계수에 대한 F 검정)
+# 다중회귀모형 완전모형에 대한 분산분석표(각 회귀 계수에 대한 F 검정)
+F1 = anova(FullModel); F1
+```
+
+:::{.callout-note}
+여기서도 분산분석표를 만들 수 있다. Dur, Area, Rooms의 Sum of Square를 더하면 SSR이 된다. 이를 SSR의 자유도 3(k = 독립변수 갯수)으로 나누면 MSR이 된다.
+:::
+```{r}
+#| label: MSR 계산 - anova(Fullmodel) 활용
+# MSR 계산 - anova(Fullmodel) 활용
+
+SSR = sum(F1[1:3,2])
+MSR = SSR/3
+MSR
+```
+
+:::{.callout-note}
+Residuals 의 Mean Square는 MSE에 해당한다. 앞에서 구한 MSR을 MSE로 나누면 F검정을 위한 F값이 만들어진다. 분자자유도 3, 분모자유도 22의 F분포를 이용하여 F검정을 진행할 수 있다.
+:::
+
+```{r}
+#| label: F검정 - anova(Fullmodel) 활용
+# F검정 - anova(Fullmodel) 활용
+
+Fvalue = MSR/F1[4,3]
+Fvalue
+1-pf(Fvalue,3,22) # p값 계산
+
+```
+
+
+```{r}
+#| label: NullModel과 FullModel에 대한 비교 분산분석
+# NullModel과 FullModel에 대한 비교 분산분석
+anova(NullModel, FullModel)
+```
+
+:::{.callout-note}
+여기서 NullModel의 RSS(Residual Sum of Squares)는 분산분석표의 SST가 된다.(NullModel에 의한 예측값은 실제값에 대해 아무것도 설명하고 있지 않기 때문에 RSS가 분산분석표의 SST와 같게 된다.) FullModel의 RSS는 오차 제곱합이므로 분산분석표의 SSE가 된다. 그러므로 Nullmodel과 Fullmodel의 RSS 차이는 SSR이 될 것이다. F-value는 MSR/MSE이므로 이는 앞서 확인한 SSR과 SSE를 자유도(3, 22)로 나눠서 그 비율을 확인하면 된다. 앞서 다른 방법의 계산결과와 동일한 F값과 p-value를 확인할 수 있다.
+:::
+
+```{r}
+#| label: r^2, adj r^2, MSE, AIC, BIC 확인(Fullmodel)
+# r^2, adj r^2, MSE, AIC, BIC 확인(Fullmodel)
+
+summary(FullModel)$r.squared
+summary(FullModel)$adj.r.squared
+sigma(FullModel)^2 # MSE = 잔차 표준오차(잔차 표준편차를 자유도로 나눈 것)의 제곱 
+AIC(FullModel) 
+BIC(FullModel)
+
+```
+
+```{r}
+#| label: r^2, adj r^2, MSE, AIC, BIC 확인(PartialModel1)
+# r^2, adj r^2, MSE, AIC, BIC 확인(Fullmodel)
+
+# PartialModel1 = 기간 + 면적(Dur + Area)
+
+summary(PartialModel1)$r.squared
+summary(PartialModel1)$adj.r.squared
+sigma(PartialModel1)^2
+AIC(PartialModel1)
+BIC(PartialModel1)
+```
+
+```{r}
+#| label: r^2, adj r^2, MSE, AIC, BIC 확인(PartialModel2)
+# r^2, adj r^2, MSE, AIC, BIC 확인(PartialModel2)
+
+# PartialModel2 = 면적(Area)
+summary(PartialModel2)$r.squared
+summary(PartialModel2)$adj.r.squared
+sigma(PartialModel2)^2
+AIC(PartialModel2)
+BIC(PartialModel2)
+```
+
+:::{.callout-note}
+
+위 결과로 봤을 때, AIC, BIC, MSE가 가장 작고 adj-R^2가 가장 높은 PartialModel1이 가장 적합한 모형으로 보인다.
+
+FullModel과 PartialModel1의 차이는 Rooms 변수의 유무이다. FullModel의 Summary를 통해 Rooms의 t값을 통해 회귀계수의 통계적 유의성을 확인하여, 통계적으로 유의하지 않다면, Rooms가 없는 PartialModel1이 더 적합한 모형이라 할 수 있다.
+
+:::
+
+```{r}
+#| label:  Rooms의 통계적 유의성 확인
+# Rooms의 통계적 유의성 확인
+
+summary(FullModel) 
+```
+
+:::{.callout-note}
+Rooms의 p-value는 0.71404로 귀무가설(Rooms의 계수 = 0)을 기각할 수 없다. 그러므로 Rooms는 통계적으로 유의하지 않은 독립변수이다. 이는 PartialModel1이 더 적합한 모형임을 뒷받침해준다.
+:::
+
+:::{.callout-warning}
+이때 Rooms 변수를 제외한 것은 Rooms변수가 매매가격을 예측하는데 영향력이 없기 때문이 아니라, Area 변수가 이미 Rooms 변수가 설명하는 부분을 설명하고 있기 때문에, Rooms 변수가 추가적으로 설명할 부분이 없기 때문에 제외된 것이라고 해석해야 한다.
+:::
+
+```{r}
+#| label: PartialModel1을 이용한 30일된 32평 방 5개 아파트 가격 평균값의 95% 신뢰구간
+# PartialModel1을 이용한 30일된 32평 방 5개 아파트 가격 평균값의 95% 신뢰구간
+
+predict(PartialModel1, newdata=data.frame(Dur=30, Area=32), interval="confidence")
+
+```
+
+```{r}
+#| label: PartialModel1을 이용한 30일된 32평 방 5개 아파트 가격의 95% 신뢰구간
+# PartialModel1을 이용한 30일된 32평 방 5개 아파트 가격의 95% 신뢰구간
+
+predict(PartialModel1, newdata=data.frame(Dur=30, Area=32), interval="prediction")
+
+```
+
+:::{.callout-important}
+이 아파트는 2억1천1백만원 정도로 매매가격을 추정할 수 있다.
+
+만일 매매가격이 2억 4천 8백만원이상 이면 이례적으로 비싼 가격(극단값)이라 판단할 수 있다.
+
+반대로 1억 7천 5백만원 이하로 매매가 이루어지기는 어렵다고 볼 수 있다.
+:::
+
+## 다중공선성
+
+### 예제 10 - Singularity 문제
+
+:::{.callout-note}
+높은 다중공선성을 가진 독립변수가 발견되면 모형에서 제거하는 것이 기본적인 해결방법이다. 하지만, 제거하는 이유가 종속변수 Y를 예측하는 데 중요한 변수가 아니기 때문에 제거하는 것이 아니라, 최소제곱법이 회귀분석결과를 안정적으로 제공하지 못하게 만들기 때문에 제거하는 것이다. - 데이터 사이언스 통계학, 이군희, 2023
+:::
+
+```{r}
+#| label: 완벽한 상관관계를 갖는 두 독립변수가 포함된 회귀 분석
+# 완벽한 상관관계를 갖는 두 독립변수가 포함된 회귀 분석
+
+x1=1:10
+x2=21:30 
+y = 1 + 2*x1 + 3*x2 + rnorm(10, 0, 10)
+M5 = lm(y ~ x1 + x2); summary(M5) 
+```
+
+:::{.callout-note}
+`Coefficients: (1 not defined because of singularities)`
+
+singularity 문제가 발생하여 x2에 대한 추정이 이루어지지 않았다.
+:::
+
+:::{.callout-important}
+독립변수간에 높은 상관관계(상관계수의 절대값이 1에 가까운 경우)를 가지면 이러한 singularity 문제가 발생한다.
+:::
+
+singularity 문제가 발생하지 않더라도 두 독립변수의 상관관계가 높으면 회귀분석에 의한 결과가 상당부분 왜곡되어 나타난다. 이를 **다중공선성 문제**라고 한다.
+
+다중공선성 문제가 발생하면, 회귀계수$b_j$의 값이 불안정(회귀계수의 분산이 커진다 = 정확성이 떨어진다)하며 회귀계수 $b_j$의 표준오차 $\hat{\sigma}(b_j)$가 커져서 회귀계수의 p값이 크게 나타난다.(이러한 현상을 분산팽창(Variance Inflation)이라고 한다.)
+
+:::{.callout-tip}
+회귀모형의 적합도는 괜찮지만, 회귀계수의 p값이 모두 크게 나타나 유의한 변수가 발견되지 않는 경우라면 다중공선성 문제를 생각해볼 수 있다.
+:::
+
+## 다중공선성 검토 
+
+### 예제 11
+
+```{r}
+#| label: chart.Correlation 그래프를 통한 다중공선성 검토
+
+# chart.Correlation 그래프를 통한 다중공선성 검토
+PerformanceAnalytics::chart.Correlation(df1) 
+```
+ 
+:::{.callout-note}
+chart.correlation을 통해 Rooms와 Area에 높은 상관관계가 있음을 확인했다. 앞서 Rooms가 포함된 Fullmodel에서 Rooms의 회귀계수에 대한 t검정(부분검정)의 p값이 컸던 것을 보면, 왜곡된 결과를 내놓을 수 있기 때문에 다중공선성 문제가 있다고 보고 Rooms를 제외하는 것이 맞다. 
+:::
+
+:::{.callout-caution}
+반대로, Dur과 Area의 상관관계는 유의한 정도로 보이지만, Dur과 Area 두 변수만 포함된 Partialmodel1에서 두 변수는 모두 통계적으로 유의하고, 회귀계수의 부호 또한 설명 가능하기 때문에, 다중공선성의 문제는 발생하지 않았다고 보는게 합당하다.
+:::
+
+```{r}
+#| label: PartialModel1의 두 독립변수의 통계적 유의성 확인
+
+# PartialModel1의 두 독립변수의 통계적 유의성 확인
+summary(PartialModel1)
+```
+
+### 분산팽창인자(Variance Inflation Factor,VIF)
+
+분산팽창인자는 다음과 같다.
+$$VIF_j = \frac{1}{1-R_j^2}$$
+
+$R_j^2$는 j번째 독립변수를 종속변수로 하고 나머지 독립변수로 회귀모형을 만들었을 때 회귀모형의 결정계수이다. 보통 VIF가 5보다 크면 다중공선성 문제를 의심하고 10보다 크면 심각하다고 판단한다. 하지만, 절대적인 기준은 없다. 
+
+```{r}
+#| label: vif 확인 - Full, PartialModel1
+# vif 확인 - Full, PartialModel1
+
+car::vif(FullModel) 
+car::vif(PartialModel1) 
+```
+
+:::{.callout-note}
+Rooms 변수는 위에서는 다중공선성 문제 때문에 제외했지만 VIF만 봤을 때에는 5보다 작기 때문에 다중공선성 문제가 있다고 의심하기 어렵다. 이 예제를 통해, VIF가 5보다 작더라도 다중공선성문제가 생길 수 있음을 명심해야 한다.
+:::
+
+### 다음 예제
+
+매출액 영업활동비용 영업사원수
+(억원)  (천만원)     (명) 
+
+   Sales SalesCost NSalesMan
+    22         8         6
+    23        10         7
+    18         7         5
+     9         2         2
+    14         4         3
+    20         6         4
+    21         7         4
+    18         6         3
+    16         4         3
+    19         6         3
+
+```{r}
+#| label: 다음 예제 데이터 불러오기
+# 다음 예제 데이터 불러오기
+da2= read_excel("./Salesdata.xlsx")
+```
+
+```{r}
+#| label: Sales를 추정하는 다중회귀분석
+# Sales를 추정하는 다중회귀분석
+
+M5 = lm(Sales ~ SalesCost + NSalesMan, data=da2)
+summary(M5)
+```
+
+```{r}
+#| label: da2의 각변수의 상관관계 확인
+# da2의 각변수의 상관관계 확인
+
+signif(cor(da2),3) 
+```
+
+#### Assumption 1 : Model Specification Error Check (Linearity) 선형성 가정 확인
+
+```{r}
+#| label: crPlot 사용하여 선형성 확인
+# crPlot 사용하여 선형성 확인
+
+crPlots(M5)  # Evaluate Nonlinearity: component + residual plot 
+     # Same as 'Partial Residual Plot' (xi) versus (bi xi + residual)
+```
+
+```{r}
+#| label: ceresPlots 사용하여 선형성 확인
+# ceresPlots 사용하여 선형성 확인
+ceresPlots(M5) # Ceres plots: Conditional Expectation Partial Residuals
+```
+
+CeresPlot은 
+
+:::{.callout-caution}
+SalesCost와 Ceres 잔차를 보면 선형적으로 증가하는 관계를 보인다. 이는 Sales를 예측함에 있어서 SalesCost가 비선형적인 관계여야할지도 모른다는 점을 암시한다. 
+
+이에반해 NSalesMan은 Ceres 잔차와 특별한 관계가 없어보인다. 이는 NSalesMan이 Sales를 예측함에 있어서 선형적인 관계가 맞다는 것을 보여준다.
+:::
+
+#### Evaluate Collinearity 다중 공선성 확인
+```{r}
+#| label: vif 확인
+
+# vif 확인
+vif(M5) # variance inflation factors 
+```
+
+
+```{r}
+#| label: partialmodel과 fullmodel 비교 분산분석
+
+# partialmodel과 fullmodel 비교 분산분석
+M6 = lm(Sales ~ SalesCost, data=da2) # Partial Model
+anova(M5, M6)
+```
+
+:::{.callout-note}
+SalesCost와 NSalesMan 변수 두개 다 있을 때 RSS(잔차 제곱합)이 더 작다. 그러나 이에 대한 F값의 p-value를 봤을 때 통계적으로 유의하게 작다고 판단하긴 어렵다.(유의수준 5%에서 생각했을 때)
+:::
+
+```{r}
+#| label: 회귀모형 잔차분석
+# 회귀모형 잔차분석 
+
+layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page 
+   # same as 'par(mfrow=c(2,2))'
+plot(M6)
+```
+
+:::{.callout-note}
+왼쪽 위부터 시계방향으로 선형성 확인(모델 적합도), 등분산성 확인, 영향점 확인, 정규성 확인 
+:::
+
+QQ플롯은 정규성을 검정하는데 사용한다.가운데 점선 직선은 이론적인 정규분포일 때 데이터가 위치하는 곳을 뜻한다.
+
+
+#### Assumption Check in the Regression Model
+
+```{r}
+#| label: gvlma - 일반화된 선형회귀 방정식의 가정에 대한 적절성 확인
+
+# gvlma - 일반화된 선형회귀 방정식의 가정에 대한 적절성 확인
+gvlma(M6)
+```
+
+:::{.callout-note}
+Link function에 문제가 있다면 모형의 적합성 문제 즉, 선형성이 아닐수도 있음을 암시한다.
+:::
+
+```{r}
+#| label: durbin watson 더빈 왓슨 검정 - 잔차 독립성 검정
+# durbin watson 더빈 왓슨 검정 - 잔차 독립성 검정
+car::durbinWatsonTest(M6)
+```
+
+귀무가설이 상관관계= 0이므로 p값이 충분히 높으면 독립성을 만족한다고 판단할 수 있다.
+
+
+```{r}
+#| label: ncv test 등분산성 검정
+# ncv test 등분산성 검정
+car::ncvTest(M6)
+```
+
+귀무가설은 잔차가 등분산성을 가진다 이므로 p값이 충분히 높으면 등분산성을 만족한다고 판단할 수 있다.
+
+```{r}
+#| label: shapiro 검정 - 정규성 검정
+
+# shapiro 검정 - 정규성 검정
+shapiro.test(residuals(M6))
+```
+
+귀무가설은 잔차가 정규성을 가진다 이므로 p값이 충분히 높으면 정규성을 만족한다고 판단할 수 있다.
+
+
+```{r}
+#| label: 산점도를 통한 영향점 확인
+# 산점도를 통한 영향점 확인
+par(mfrow=c(1,1),family = "AppleGothic")
+plot(da2$SalesCost, da2$Sales, pch=20, cex=1.2, xlab='영업활동비용',
+   ylab='매출액', main='영업활동비용과 매출액 관계')
+abline(M6, lwd=2)
+
+```
+
+
+#### Regression with Dummy variables (Chapter 22) 더미변수
+
+
+```{r}
+#| label: 더미변수 이용한 회귀분석 예제 데이터 불러오기
+# 더미변수 이용한 회귀분석 예제 데이터 불러오기
+
+type=c("할인점","할인점","할인점","일반점","일반점",
+       "할인점","일반점","일반점","할인점","일반점")
+
+da3=cbind(da2, as.factor(type)) 
+
+#da2는 앞서 사용했던, Sales, SalesCost, NSalesMan 변수로 이루어진 데이터프레임이다.
+
+```
+
+```{r}
+#| label: model3 - 평행성(parallel)을 가정하지 않고 더미변수와 메트릭 변수가 있는 다중회귀분석
+
+# model3 - 평행성(parallel)을 가정하지 않고 더미변수와 메트릭 변수가 있는 다중회귀분석
+
+
+#평행성이 없다는 건 더미변수와 메트릭 변수의 상호작용효과가 있다는 뜻이다.
+
+model3 = lm(Sales ~ SalesCost*type, data=da3) # Without Parallel
+summary(model3)
+
+```
+
+```{r}
+#| label: model4 - 평행성(parallel)을 가정하고 더미변수와 메트릭 변수가 있는 다중회귀분석
+
+# model4 - 평행성(parallel)을 가정하고 더미변수와 메트릭 변수가 있는 다중회귀분석
+
+
+# 더미변수와 메트릭 변수의 상호작용효과가 없는 경우에 해당한다.
+
+model4 = lm(Sales ~ SalesCost+type, data=da3) # With Parallel
+summary(model4)
+
+```
+
+두 결과를 비교해보면 상호작용을 고려한 model3의 $adj-R^2$가 0.9337로 model4의  $adj-R^2$(0.8332)보다 훨씬 좋다. 또한 상호작용항의 통계적 유의성도 있는 것으로 나타나기 때문에 평행성 가정을 하지 않은 회귀모형의 성능이 뛰어난 것으로 판단할 수 있다.
+
+```
+                     Estimate Std. Error t value Pr(>|t|)
+SalesCost:type할인점  -1.2250     0.3597  -3.406 0.014394 * 
+```
+#### Model Building: Variable Selection (Chapter 22)
+
+Selecting a subset of X variables (or predictor) from a larger set 
+(e.g., stepwise selection) is a controversial topic. You can 
+perform stepwise selection (forward, backward, both) using the 
+stepAIC( ) function from the MASS package. 
+Selection of terms for deletion or inclusion is based on AIC
+(Akaike's information criterion). R defines AIC as
+
+      -2 maximized log-likelihood + 2 number of parameters
+
+stepAIC( ) performs stepwise model selection by exact AIC.
+
+##### Stepwise Regression 단계별 선택법(변수추가법 + 변수제거법)
+
+```{r}
+#| label: model selection - 단계별 선택법
+# model selection - 단계별 선택법
+
+model5 = lm(Sales ~ SalesCost*NSalesMan*type, data=da3)
+step <- stepAIC(model5, direction="both")
+step$anova # display results
+```
+
+
+##### A little more investigation in R
+
+```{r}
+#| label: pairs() - 변수간 관계를 볼 수 있는 산점도
+# pairs() - 변수간 관계를 볼 수 있는 산점도
+
+pairs(da2)
+```
+```{r}
+#| label: model selection - 변수제거법
+# model selection - 변수제거법
+
+step(model5, direction="backward")
+```
+
+```{r}
+#| label: model selection - 변수추가법(null model과 scope를 지정하고)
+# model selection - 변수추가법(null model과 scope를 지정하고)
+
+scope = formula(~SalesCost*NSalesMan*type)
+null = lm(Sales ~ 1, data=da3)
+
+step(null, scope, direction="forward")
+```
+
+```{r}
+#| label: model selection - 단계별 선택법(null model과 scope를 지정하고)
+# model selection - 단계별 선택법(null model과 scope를 지정하고)
+
+step(null, scope, direction="both")
+```
+
+```{r}
+#| label: predict() 이용하여 추정값 및 신뢰구간 구하기
+# predict() 이용하여 추정값 및 신뢰구간 구하기
+
+model7=lm(Sales ~ SalesCost*NSalesMan, data=da3)
+predict(model7, list(SalesCost=c(4,8), NSalesMan=c(3,6)), interval="conf") 
+# SalesCost = 4이고, NSalesMan이 3일때, Sales의 추정값과 95% 신뢰구간
+# SalesCost = 8이고, NSalesMan이 6일때, Sales의 추정값과 95% 신뢰구간
+```
+
+```{r}
+#| label: model7의 summary
+# model7의 summary
+
+summary(model7)
+```
+
+
+```{r}
+#| label: scale()를 이용하여 데이터를 표준화(Standardized)하고 회귀분석 - model7S
+# scale()를 이용하여 데이터를 표준화(Standardized)하고 회귀분석 - model7S
+
+model7S=lm(scale(Sales) ~ scale(SalesCost)*scale(NSalesMan),data=da3)
+summary(model7S)
+```
+
+표준화하고 회귀분석한 결과와 그렇지 않은 결과의 $adj-R^2$는 같다. 그러나, 각 회귀계수의 통계적 유의성은 변동이 있었다. 
+
+
+##### All subset Regression (Extra topic)
+
+Alternatively, you can perform all-subsets regression using the **leaps()** function from the **leaps package.** In the following code **nbest** indicates the number of subsets of each size to report. Here, the ten best models will be reported for each subset size (1 predictor, 2 predictors, etc.).
+
+```{r}
+leaps=regsubsets(Sales~SalesCost*NSalesMan*type, data=da3, nbest=2)
+summary(leaps) # view results 
+```
+
+Other options for plot() are bic, Cp, and adjr2. Other options 
+for plotting with subset() are bic, cp, adjr2, and rss.
+
+#### Influential Diagonosis: Outlier+Leverage (Extra topic)
+
+##### Assessing Outliers
+
+```{r}
+#| label: outlierTest() = Bonferonni 방식으로 아웃라이어 탐색
+# outlierTest() = Bonferonni 방식으로 아웃라이어 탐색
+outlierTest(model3) # Bonferonni p-value for most extreme obs
+```
+
+```{r}
+#| label: 정규성 검정을 위한 qqPlot()
+# 정규성 검정을 위한 qqPlot()
+
+qqPlot(model3, main="QQ Plot") #qq plot for studentized resid 
+```
+
+```{r}
+leveragePlots(model3) # Regression Leverage Plots
+   # Same as Added-Variable plots: (X|Others) versus (Y|Others) 
+   # added variable plots: 'av.Plots(model1)' R에서 곧 없어짐
+
+```
+
+
+
+##### Influential Observations : Cook's D
+Cook's distance measures the effect of deleting a given observation. 
+Data points with large residuals (outliers) and/or high leverage 
+may distort the outcome and accuracy of a regression. 
+Points with a large Cook's distance are considered to merit 
+closer examination in the analysis (if D > 4/(n-(k+1))).
+
+       Sum_j (yhat_j - yhat_j(-i))^2
+  Di = -----------------------------
+                 k   MSE
+
+cutoff <- 4/((nrow(da2)-length(model1$coefficients))) 
+plot(model1, which=4); abline(h=cutoff) 
+ 
+influencePlot(model1, id.method="identify", main="Influence Plot", 
+  sub="Circle size is proportial to Cook's Distance" ) # Influence Plot
+
+===== (논의 사항) =======
+
+df1=read.table("clipboard", h=T)
+lm(sales~area+rooms, da=df1)
+lm(sales~area, da=df1)
+lm(sales~rooms, da=df1)
+
+library(lavaan)
+M1 = ' # direct effect
+         sales ~ c*rooms
+       # mediator
+         area ~ a*rooms
+         sales ~ b*area
+       # indirect effect (a*b)
+         ab := a*b
+       # total effect
+         total := c + (a*b) '
+
+fit1 = sem(M1, data=df1)
+summary(fit1)
+# summary(fit_analysis, standardized=T, rsquare=T)
+
+library(semPlot)
+semPaths(fit1,
+   whatLabels="par", intercepts=TRUE, style="lisrel",
+   nCharNodes=0, nCharEdges=0, rotation=2, edge.label.position=.43,
+   edge.label.cex=0.9, curveAdjacent=TRUE, title=TRUE, 
+   layout="tree2", curvePivot=TRUE)

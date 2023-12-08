@@ -1,0 +1,1063 @@
+---
+title: "ch24,25(ch12) 분산분석"
+format: html
+toc: true
+toc-depth: 5
+---
+
+```{r setup, include=FALSE}
+library(ggpubr)
+library(DescTools)
+library(readxl)
+```
+
+## 분산분석, 분산분석표, 분산분석 모형
+
+### 예제2
+
+![](./images/1.png)
+
+```{r}
+#| label: 예제1에 맞는 난수 발생(평균 70,80,90, 공통분산 25)
+
+set.seed(12)
+Grp1 = rnorm(5,70,5)
+Grp2 = rnorm(5,80,5)
+Grp3 = rnorm(5,90,5)
+df1 = data.frame(Grp1,Grp2,Grp3)
+df1 = signif(df1,3)
+df1
+```
+```{r}
+#| label: 분산분석 데이터 구조 만들기 - 각 그룹의 평균 및 전체 평균 계산
+
+signif(mean(Grp1),4) # 각 그룹의 평균
+signif(mean(Grp2),4)
+signif(mean(Grp3),4)
+signif((mean(Grp1)+mean(Grp2)+mean(Grp3))/3,4) # 전체 평균
+```
+
+#### 분산분석 데이터 구조 - 예제2
+
+| 반복수 | 그룹1 | 그룹2 | 그룹3 |        |
+|---------|----- |------ |------ |--------|
+| 1       | 62.6 |  78.6 | 86.1  |        |
+| 2       | 77.9 |  78.4 | 83.5  |        |
+| 3       | 65.2 |  76.9 | 86.1  |        |
+| 4       | 65.4 |  79.5 | 90.1  |        |
+| 5       | 60.0 |  82.1 | 89.2  |전체평균|
+| 평균    | 66.22|  79.11| 87.01 |77.45   |
+
+
+#### 분산분석을 하려면 tidy data로!
+
+```{r}
+#| label : tidy data로 변경(2차원 행렬의 데이터 구조를 1차원 형태의 데이터 구조로 변환)
+
+df2 = stack(df1)
+df2
+```
+
+#### ggpubr 패키지를 활용한 점도표
+
+```{r}
+ggline(df2, x = "ind", y = "values", add = c("mean_sd", "jitter"), title = "Data in ANOVA model", ylab ="", xlab = "")
+```
+
+jitter는 점이 겹치지 않도록 양 옆으로 점을 분산시킨다.
+
+아래는 jitter 옵션이 적용되지 않은 그래프
+
+```{r}
+ggline(df2, x = "ind", y = "values", add = c("mean_sd"), title = "Data in ANOVA model", ylab ="", xlab = "")
+```
+		
+mean_sd 옵션은 평균과 표준편차를 표시하고 평균을 선으로 연결한다.
+
+아래는 mean_sd 옵션을 제외한 그래프(모든 add 옵션 없음)
+
+```{r}
+ggline(df2, x = "ind", y = "values", title = "Data in ANOVA model", ylab ="", xlab = "")
+```
+
+jitter만 적용시킨 그래프는 아래와 같다.
+
+```{r}
+ggline(df2, x = "ind", y = "values", add = "jitter", title = "Data in ANOVA model", ylab ="", xlab = "")
+```
+
+## 일원배치 분산분석
+
+:::{.callout-note}
+독립변수가 한개인 분산분석 = 일원배치 분산분석 one-way ANOVA
+:::
+
+one-way ANOVA는 완전랜덤화 실험설계(CRD: Complete Randomized Design)를 가정한다.
+
+### 예제3 - 일원배치 분산분석을 위한 완전 랜덤화
+
+:::{.callout-note}
+완전랜덤화 실험설계는 전체 연구대상을 처리수준(level)의 수만큼 나눈 후, 랜덤으로 처리수준을 각각 할당하는 실험설계이다. 이는 연구대상의 특성을 블록으로 구분하고 다시 무작위로 처리수준을 할당하는 랜덤화 블록 실험설계(Randomized Block Design)와 구분된다. - 연구방법론의 이해 266-267p
+:::
+
+![](./images/2.png)
+
+#### 완전랜덤화 실험
+
+4개 광고에 대해 각각 5명씩 중복되지 않게 선발한다.
+
+```{r}
+#| label: 첫번째 광고에 선택된 지원자
+
+set.seed(12)
+x = 1:20
+x1 = sample(x,5) # 1에서 20까지의 숫자중 5개의 표본을 무작위로 뽑는다.
+x1
+```
+
+```{r}
+#| label: 두번째 광고에 선택된 지원자
+set.seed(12)
+x2 = sample(x[-x1],5) # 1에서 20까지의 숫자중 x1을 제외한 5개의 표본을 무작위로 뽑는다.
+x2 
+```
+
+```{r}
+#| label: 세번째 광고에 선택된 지원자
+
+set.seed(12)
+x3 = sample(x[-c(x1,x2)],5) # 1에서 20까지의 숫자중 x1, x2를 제외한 5개의 표본을 무작위로 뽑는다.
+x3
+```
+
+```{r}
+#| label: 네번째 광고에 선택된 지원자
+set.seed(12)
+x4 = sample(x[-c(x1,x2,x3)],5) # 1에서 20까지의 숫자중 x1, x2, x3를 제외한 5개의 표본을 무작위로 뽑는다.
+x4
+```
+
+### 예제 4
+
+![](./images/3.png)
+
+#### 분산분석표 anova() + aov()
+
+```{r}
+#| label: 예제4 데이터 입력 및 분산분석, 분산분석표
+
+Group = rep(c("Seoul","Busan","Gwangju"), each = 3)
+X = c(550,600,650,520,570,620,500,580,540)
+OneWay = aov(X ~ Group) # aov()로 분산분석 실행 및 결과를 OneWay 객체에 저장, 일원 배치 분산분석이므로 독립변수 1개.
+anova(OneWay) #anova()로 분산분석표 요청
+```
+
+#### 분산분석 모형의 모수에 대한 추정값
+
+##### 수준별 평균모형
+$$X_{ij}=\mu_j+\epsilon_{ij}$$
+수준(level)별 평균을 기준으로 각 관측치를 설명한다.
+
+```{r}
+aggregate(X, by = list(Group), mean) # 수준별 평균모형(첫번째 형태의 분산분석 모형)
+```
+
+by 옵션은 list 값을 요구하기 때문에, Group을 리스트로 만들어 준다.
+위 코드를 말로 표현하자면, 'X의 값을 Group별로 평균한다.' 로 표현할 수 있다.
+
+##### 효과 모형
+$$X_{ij} = \mu + \tau_j + \epsilon_{ij}$$
+전체 평균을 기준으로 그룹간 효과 차이를 이용하여 관측치를 설명한다.
+
+```{r}
+model.tables(OneWay) # 효과모형
+```
+
+$\mu$에 대한 추정량은 제공되지 않는다. 그러나 각 그룹의 $\tau_j$의 추정량은 제공된다.
+그러므로 $\mu$에 대한 추정량이 570임을 알 수 있다.(Busan의 $\tau_j$가 0 이므로 $\mu$ = Busan 그룹의 평균)
+
+##### 레퍼런스 그룹이 있는 효과 모형
+$$X_{ij} = \mu_1 + \tau_j + \epsilon_{ij}$$
+
+처리수준으로 나눈 그룹 중 레퍼런스 그룹을 선택하여 해당 그룹을 기준으로 한다. 레퍼런스 그룹과 속해있는 그룹의 차이를 이용하여 관측치를 설명한다.
+
+```{r}
+OneWay$coefficients
+```
+
+여기서 레퍼런스그룹은 알파벳, 가나다 순으로 첫번째 수준이 레퍼런스 그룹이 된다. **항상 레퍼런스 그룹을 먼저 식별해야 한다.** 여기선 부산이 레퍼런스 그룹이다.
+
+## 다중비교와 사후검정
+
+:::{.callout-note}
+분산분석을 통해 귀무가설(그룹간 평균이 같다)을 기각한 경우, 어느 그룹(수준,level)이 다른지 검정하는 것이 **사후검정**이다. 그리고 두 개 수준의 평균차이 분석을 여러번 하는 것이 **다중비교**이다. 다중비교를 통해 어떤 그룹이 비슷하고 다른지 확인하여 그룹들을 묶고 구분할 수 있다.
+:::
+
+### 예제5
+
+![](./images/4.png)
+
+```{r}
+#| label: put data
+
+Mon = c(150, 120, 130, 160, 140)
+Tue = c(170, 180, 190, 200, 160)
+Wed = c(130, 140, 150, 160, 170)
+Thr = c(200, 180, 170, 190, 210)
+Fri = c(160, 170, 150, 140, 180)
+Sat = c(220, 230, 210, 240, 220)
+Sun = c(250, 240, 230, 220, 210)
+df1 = data.frame(Mon, Tue, Wed, Thr, Fri ,Sat, Sun)
+```
+
+#### 분산분석 및 분산분석표
+
+```{r}
+#| label: tidy data로 변경
+
+df2 = stack(df1)
+```
+
+```{r}
+#| label: 분산분석
+
+M1 = aov(values ~ ind,df2)
+anova(M1)
+```
+
+F 검정에 의한 p-value가 5% 유의 수준 보다 작기 때문에 **요일별 평균값이 동일하다는 귀무가설을 기각한다.** 이제 사후검정을 통해 어떤 요일의 평균값이 어떻게 다른지 확인해봐야 한다.
+
+#### 분산분석 모형 모수 확인 - 효과모형 이용
+
+사후검정 이전에 먼저 모형의 모수를 확인해본다. 여기서는 각 요일의 평균값을 전체 평균을 기준으로 비교하여 확인할 것이다.
+
+
+```{r}
+#| label: 효과모형을 활용한 분산분석 모형 모수 확인
+
+model.tables(M1)
+```
+
+모수를 봤을 때, 토요일과 일요일에 웹사이트 방문자수가 많다. 이제 다중비교를 통해 통계적 유의성을 확인해보자.
+
+#### 본격적인 다중비교, 사후검정
+
+##### Tukey HSD
+
+```{r}
+#| label: 사후검정 1 - TukeyHSD
+
+TukeyHSD(M1)
+```
+
+그룹간의 평균차이가 없다면 귀무가설을 기각할 수 없도록 p-value가 높게 나온다.
+예를 들어 tukey 검정 결과 중
+```
+        diff        lwr        upr     p adj
+Fri-Wed   10 -20.614401  40.614401 0.9408934
+```
+금요일과 수요일은 평균차이가 없으므로 p-value가 매우 높게 나온다.
+
+반대로 평균차이가 심한 금요일과 토요일의 결과는 아래와 같다.
+```
+        diff        lwr        upr     p adj
+Sat-Fri   64  33.385599  94.614401 0.0000066
+```
+p-value가 매우 낮다.
+
+결과를 요약한 그림은 아래와 같다.
+
+![](./images/5.png)
+
+:::{.callout}
+Tukey 검정은 반복수가 같은 데이터에만 사용할 수 있다.
+
+예를 들어 위 예시에서 월요일 방문자수 데이터의 반복수와 화요일 방문자수 데이터의 반복수가 다르다면 사용할 수 없다.
+:::
+
+##### Dunnett
+
+```{r}
+#| label: Dunnett 검정
+
+DescTools::DunnettTest(values~ind,df2,control = "Tue") # 레퍼런스 그룹을 화요일로 선택
+```
+
+##### Fisher LSD
+
+```{r}
+#| label: Fisher LSD 검정
+
+DescTools::PostHocTest(M1, method = "lsd")
+```
+
+:::{.callout-caution}
+Fisher LSD는 다른 사후검정과 달리 개별 유의수준만 사용하기 때문에 집단 유의수준은 높을 수 있다. 즉, 집단 간 평균이 같음에도 다르다고 결과를 낼 확률이 높아진다.
+:::
+
+그러나, Fisher LSD는 개별 유의수준만 통제하므로 조그마한 차이도 잘 잡아낸다. 다른 사후검정과 비교하여 검정력이 높다. 또한 그룹간 반복수가 다르더라도 사용할 수 있다.
+
+##### Bonferroni
+
+```{r}
+#| label: Bonferroni
+
+DescTools::PostHocTest(M1, method = "bonferroni")
+```
+
+
+## 분산분석 가정에 대한 검토
+
+
+
+## 일원배치 분산분석 부터...
+--- One-way ANOVA (Chapter 24)
+
+   score type
+      77  M1
+      79  M1
+      87  M1
+      85  M1
+      78  M1
+      80  M2
+      82  M2
+      86  M2
+      85  M2
+      80  M2
+      83  M3
+      91  M3
+      94  M3
+      88  M3
+      85  M3
+
+da1 = read.table("clipboard", h=T)
+score=da1$score; type=da1$type
+levels(type) = c("Method 1", "Method 2", "Method 3")
+
+tmpfn = function(x) c(mean = mean(x), sd = sd(x), n = length(x))
+tapply(score, type, tmpfn)
+
+plot(type, score, xlab="Educational Method", ylab="Exam Score")
+# boxplot(score~type)
+
+library('gplots')
+plotmeans(score~type,xlab="Educational Method", ylab="Exam Score", main="Mean Plot\nwith 95% CI")
+
+# ∫–ªÍ∫–ºÆ Ω««‡
+summary(lm(score~type))
+aov.out = aov(score~type)
+summary(aov.out)
+
+model.tables(aov.out,type="effects",se=T)
+model.tables(aov.out,type="means",se=T)
+
+
+# Pairwise Comparison: æÓµº≠ ¬˜¿Ã∞° πﬂª˝«œø¥¥¬∞°?
+TukeyHSD(aov.out)
+plot(TukeyHSD(aov.out))
+
+pairwise.t.test(score, type, p.adjust.method="bonferroni", paired=T)
+
+Tukey HSD test ∞° ¥Ÿ¡ﬂ∫Ò±≥ø°º≠¥¬ ∞°¿Â »ø∞˙¿˚¿Œ ∞Õ¿∏∑Œ æÀ∑¡¡Æ ¿÷¡ˆ∏∏
+"pairwise t-tests with adjusted p-values"∏¶ ¿ÃøÎ«œø© ±◊∑Ï¬˜¿Ã∏¶ ∫Ò±≥«“ ºˆµµ ¿÷¥Ÿ.
+Adjusted p-value πÊπ˝¿∏∑Œ¥¬ Bonferroni πÊπ˝ ("bonferroni") ¿Ã ¿÷¿∏∏Á, ±◊ ¿Ãø‹ø°
+Holm (1979) πÊπ˝ ("holm"), Hochberg (1988) πÊπ˝ ("hochberg"), Hommel (1988) πÊπ˝ 
+("hommel"), Benjamini & Hochberg (1995) πÊπ˝ ("BH" or its alias "fdr"),  
+Benjamini & Yekutieli (2001) πÊπ˝ ("BY") ¿Ã ¿÷¥Ÿ. 
+Output¿∫ ∏µÁ ∞°¥…«— Ω÷µÈ¿« ¬˜¿Ãø° ¥Î«— ¿Ø¿«º∫¿ª ≥™≈∏≥ª¥¬ p-vaue ∞° 
+≈◊¿Ã∫Ì «¸≈¬(∂«¥¬ ∏ﬁ∆Æ∏ØΩ∫ «¸≈¬)∑Œ ¡¶∞¯µ»¥Ÿ.
+
+
+### Effect Analysis
+plot.design(score ~ type)
+model.tables(aov.out,type="effects",se=T)
+model.tables(aov.out,type="means",se=T)
+
+### Test assumptions (µÓ∫–ªÍº∫ø° ¥Î«— ∞°¡§ ∞À≈‰)
+# Homogeneity of variance: Bartlett test of homogeneity of variances
+bartlett.test(score ~ type)
+fligner.test(score ~ type)
+
+### Not assume equal variance (∏∏¿œ µÓ∫–ªÍº∫¿Ã ±˙¡ˆ¥¬ ∞ÊøÏ => ∞À¡§∑¬¿Ã æ‡«ÿ¡¸)
+oneway.test(score~type) 
+
+par(mfrow=c(2,2))
+plot(aov.out) # the aov command prepares the data for these plots
+par(mfrow=c(1,1))
+
+### (¬¸∞Ì) Non-parametric alternative to ANOVA:
+µŒ ±◊∑Ïø° ¥Î«— ¬˜¿Ã∏¶ ∫–ºÆ«œ¥¬ ∞ÊøÏø°¥¬ Wilcoxon test (∂«¥¬ Mann-Whitney test) ∏¶ 
+¿˚øÎ«“ ºˆ ¿÷¿∏∏Á, ¿Ã ∞ÊøÏ ∏µÁ ¡°ºˆ¥¬ º¯¿ß¡°ºˆ (ranks) ∑Œ ∫Ø»Øµ«æÓ ±◊∑Ï∫∞ º¯¿ß ¡°ºˆ∞°
+æÓ¥¿ ¡§µµ ¥Ÿ∏•¡ˆ∏¶ ∫–ºÆ«œ∞‘ µ»¥Ÿ. ∏∏¿œ ±◊∑Ï¿« ºˆ∞° 2∞≥ ¿ÃªÛ¿« ¿œπ›¿˚¿Œ ªÛ»≤¿œ ∞ÊøÏ¥¬
+kruskal test ∏¶ ¿ÃøÎ«œø© ∫–ºÆ¿Ã ¡¯«‡µ… ºˆ ¿÷¥Ÿ.
+
+kruskal.test(score ~ type)
+
+--- Two-way ANOVA with insignificant interaction (Chapter 24)
+
+   score1 type1 gender
+      70    M1   Male
+      85    M1   Male
+      82    M1   Male
+      90    M1 Female
+      88    M1 Female
+      89    M1 Female
+      48    M2   Male
+      46    M2   Male
+      50    M2   Male
+      59    M2 Female
+      54    M2 Female
+      56    M2 Female
+      50    M3   Male
+      55    M3   Male
+      48    M3   Male
+      52    M3 Female
+      66    M3 Female
+      53    M3 Female
+
+da2 = read.table("clipboard", h=T)
+score=da2$score1; type=da2$type1; gender=da2$gender
+levels(type) = c("Method 1","Method 2","Method 3")
+
+tapply(score, list(type, gender), mean)
+barplot(tapply(score,list(type,gender),mean),
+	beside=T, ylim=c(0,max(score)+25), col=rainbow(3))
+legend(5,115,c("Method 1","Method 2","Method 3"), fil=rainbow(3))
+title("Two-way ANOVA with replication")
+
+# Two-way ANOVA with interaction
+model1 <- aov(score ~ type*gender)
+summary(model1)
+summary.lm(model1)
+
+# Two-way ANOVA without interaction
+model2 <- aov(score ~ type+gender)
+summary.lm(model2)
+
+# Method 2 øÕ Method 3 «’√ƒº≠ 2∞≥ ƒ´≈◊∞Ì∏Æ∑Œ ∫–ºÆ«œ∏È?
+# => ¥ıøÌ ∂—∑¬«— ¬˜¿Ã∏¶ »Æ¿Œ«“ ºˆ ¿÷¥Ÿ.
+
+type1 <- factor(type)
+levels(type1)
+levels(type1)[1] <- "best"
+levels(type1)[c(2,3)] <- "worst"
+levels(type1)
+model_adj <- aov(score~type1+gender)
+anova(model2,model_adj)
+summary.lm(model_adj)
+TukeyHSD(model_adj)
+
+# interaction plot
+interaction.plot(type1, gender, score,col = 1:2, lty=1)
+
+--- Two-way ANOVA with significant interaction (Chapter 24)
+
+     score2 type2 gender
+      50       M1   Male
+      45       M1   Male
+      55       M1   Male
+      70       M1 Female
+      72       M1 Female
+      68       M1 Female
+      67       M2   Male
+      60       M2   Male
+      58       M2   Male
+      51       M2 Female
+      57       M2 Female
+      48       M2 Female
+
+da3 = read.table("clipboard", h=T)
+score=da3$score2; type=da3$type2; gender=da3$gender
+levels(type) = c("Method 1","Method 2")
+
+tapply(score, list(type, gender), mean)
+barplot(tapply(score,list(type,gender),mean),
+	beside=T, ylim=c(0,max(score)+25), col=rainbow(2))
+legend(4,85,c("Method 1","Method 2"), fil=rainbow(2))
+title("Two-way ANOVA with replication")
+
+# Two-way ANOVA with interaction
+summary(lm(score~type*gender))
+model1 <- aov(score ~ type*gender)
+summary(model1)
+
+# Two-way ANOVA without interaction
+model2 <- aov(score ~ type+gender)
+summary.lm(model2)
+
+anova(model1,model2) 
+# µŒ ∏µ®ø° ¥Î«— ≈◊Ω∫∆Æ => interaction ¿˝¥Î ï˚∏È æ»µ»¥Ÿ¥¬ ∞·∑–~~!!
+
+TukeyHSD(model1)
+
+# interaction plot
+interaction.plot(type, gender, score,col = 2:1, lty=1, lwd=2)
+
+--- Two-way ANOVA with Unbalanced Design (Chapter 24)
+
+  score    type       gender
+     1     Method1    Male
+     3     Method1    Male
+    10    Method1   Female
+     2    Method2    Male
+     8    Method2   Female
+    12    Method2  Female
+
+da4=read.table("clipboard", h=T)
+
+with(da4, tapply(score, list(type, gender), mean))
+with(da4, tapply(score, type, mean))
+
+library(lsmeans) # ∂«¥¬ library(emmeans)
+model3 = lm(score ~ type + gender)
+lsmeans(model3, "type")
+lsmeans(model3, "type", contr = "eff") # Effect Model
+lsmeans(model3, "type", contr = "trt.vs.ctrlk") # contrast: ∆Ú±’ ¬˜¿Ã∏¶ ≈◊Ω∫∆Æ 
+
+### Let's talk about several Sum of Squares:
+
+Type I SS, also called °∞sequential°± sum of squares:
+For unbalanced data, this approach tests for a difference in the weighted marginal means.
+SS(A) for factor A.
+SS(B | A) for factor B.
+SS(AB | B, A) for interaction AB.
+Type II SS:
+SS(A | B) for factor A.
+SS(B | A) for factor B.
+This type tests for each main effect after the other main effect. 
+Note that no significant interaction is assumed.
+Type III SS:
+SS(A | B, AB) for factor A.
+SS(B | A, AB) for factor B.
+This approach is valid in the presence of significant interactions.
+
+# For Type I SS:
+
+
+> anova(model3)
+Analysis of Variance Table
+
+Response: score
+          Df Sum Sq Mean Sq F value Pr(>F)  
+type       1 10.667  10.667     3.2 0.1716  
+gender     1 85.333  85.333    25.6 0.0149 *
+Residuals  3 10.000   3.333                 
+---
+Signif. codes:  0 °Æ***°Ø 0.001 °Æ**°Ø 0.01 °Æ*°Ø 0.05 °Æ.°Ø 0.1 °Æ °Ø 1
+
+> model4 = lm(score ~ gender + type)
+
+> anova(model4) # anova를 사용하면 Type 3 Sum of square를 자동으로 적용해준다.
+Analysis of Variance Table
+
+Response: score
+          Df Sum Sq Mean Sq F value  Pr(>F)  
+gender     1     96  96.000    28.8 0.01266 *
+type       1      0   0.000     0.0 1.00000 # Type 3를 사용하여 SS가 0으로 나온다.
+Residuals  3     10   3.333                  
+---
+Signif. codes:  0 °Æ***°Ø 0.001 °Æ**°Ø 0.01 °Æ*°Ø 0.05 °Æ.°Ø 0.1 °Æ °Ø 1
+> 
+
+# ø©±‚º≠¥¬ Type I SS ∏¶ ¡¶∞¯µ«¥¬µ• ¿Ã ∞™¿∫ µ∂∏≥∫Øºˆ¿« º¯º≠ø° øµ«‚¿ª πﬁ¥¬¥Ÿ. 
+# ø÷≥ƒ«œ∏È √ﬂ∞°¿˚¿∏∑Œ ∫Øºˆ∞° ≈ı¿‘µ«æ˙¿ª ∞ÊøÏ SS ¡ı∞°∫–∏∏¿ª ∞ËªÍ«œ±‚ ∂ßπÆ¿Ã¥Ÿ. 
+
+# In general, R use only Type I Sum of Square.
+# How to get Type III Sum of Squares?
+
+> drop1(model3) # ∫Øºˆ «— ∞≥∏¶ ª©∏È ≥™≈∏≥™¥¬ SS¿« ∫Ø»≠∑Æ ¡¶∞¯
+
+Single term deletions
+
+Model:
+score ~ type + gender
+       Df Sum of Sq    RSS    AIC
+<none>              10.000  9.065
+type    1     0.000 10.000  7.065
+gender  1    85.333 95.333 20.594
+
+# ∂«¥¬ car ∆–≈∞¡ˆ¿« Anova() «‘ºˆ∏¶ ªÁøÎ«—¥Ÿ.
+
+> library(car)
+
+> Anova(model3, type=2)
+Anova Table (Type II tests)
+
+Response: score
+          Sum Sq Df F value Pr(>F)  
+type       0.000  1     0.0 1.0000  
+gender    85.333  1    25.6 0.0149 *
+Residuals 10.000  3                 
+---
+Signif. codes:  0 °Æ***°Ø 0.001 °Æ**°Ø 0.01 °Æ*°Ø 0.05 °Æ.°Ø 0.
+
+# Note: SSB(type, gender) = 96 ¿∏∑Œ «’∞˙ ¿œƒ°«œ¡ˆ æ ¥¬¥Ÿ. 
+# model3 ø° ¥Î«œø© Type II SS øÕ Type III SS¥¬ µø¿œ«— ∞·∞˙
+
+> model5 = lm(score ~ type * gender)
+
+> Anova(model5, type=2)
+Anova Table (Type II tests)
+
+Response: score
+            Sum Sq Df F value Pr(>F)  
+type         0.000  1   0.000 1.0000  
+gender      85.333  1  17.067 0.0539 .
+type:gender  0.000  1   0.000 1.0000  
+Residuals   10.000  2                 
+---
+Signif. codes:  0 °Æ***°Ø 0.001 °Æ**°Ø 0.01 °Æ*°Ø 0.05 °Æ.°Ø 0.1 °Æ °Ø 1
+
+> Anova(model5, type=3)
+Anova Table (Type III tests)
+
+Response: score
+             Sum Sq Df F value  Pr(>F)  
+(Intercept) 100.000  1 20.0000 0.04654 *
+type          0.000  1  0.0000 1.00000  # SS = 0, 차이가 나지 않는다.
+gender       42.667  1  8.5333 0.09993 .
+type:gender   0.000  1  0.0000 1.00000  
+Residuals    10.000  2                  
+---
+Signif. codes:  0 °Æ***°Ø 0.001 °Æ**°Ø 0.01 °Æ*°Ø 0.05 °Æ.°Ø 0.
+
+
+---
+
+
+## 단일요인 반복측정 분산분석
+
+--- One-Factor design with repeated measurement (Chapter 25)
+
+입력 데이터 형태
+
+subject     Adv1    Adv2     Adv3     Adv4
+Subject1      5       9        6       11
+Subject2      7      12        8        9
+Subject3      7       8        6       10
+Subject4      5      10        7       10
+```{r}
+df1 = read_excel("AdvData.xlsx")
+```
+
+
+subject = rep(df1$subject, times=4)
+df2 = stack(df1[2:5]) # column 방향으로 읽음. values 와 ind 변수가 생성됨.
+df2[,3] = rep(df1$subject, times=4)
+colnames(df2) = c("score", "adv", "subject")
+df2 
+
+다음과 같이 데이터를 재구성함. 
+
+   score  adv   subject
+      5   Adv1  Subject1
+      7   Adv1  Subject2
+      7   Adv1  Subject3
+      5   Adv1  Subject4
+      9   Adv2  Subject1
+     12   Adv2  Subject2
+      8   Adv2  Subject3
+     10   Adv2  Subject4
+      6   Adv3  Subject1
+      8   Adv3  Subject2
+      6   Adv3  Subject3
+      7   Adv3  Subject4
+     11   Adv4  Subject1
+      9   Adv4  Subject2
+     10   Adv4  Subject3
+     10   Adv4  Subject4
+
+# 첫번째 방법
+M1 = aov(score ~ adv + Error(subject), data=df2)
+summary(M1)
+
+M1_1 = aov(score ~ adv + Error(subject/adv), data=df2)
+summary(M1_1)
+
+# 두번째 방법
+M2 = aov(score ~ adv + subject, data=df2)
+summary(M2)
+
+# 세번째 방법
+```{r}
+library(ez) 
+ezANOVA(df2, dv=.(score), wid=.(subject), within=.(adv), detailed = TRUE)
+#dv = dependent variable
+
+```
+
+#### 분석 결과 ######
+$ANOVA
+       Effect DFn DFd     SSn   SSd         F            p p<.05       ges
+1 (Intercept)   1   3 1056.25  4.25 745.58824 0.0001078026     * 0.9837020
+2         Adv   3   9   50.25 13.25  11.37736 0.0020395855     * 0.7416974
+
+$`Mauchly's Test for Sphericity` # 구형성 가정:correlation이 일정하다는 것을 보여준다.
+  Effect          W         p p<.05
+2    Adv 0.05875992 0.4962354      
+
+$`Sphericity Corrections`
+  Effect       GGe      p[GG] p[GG]<.05      HFe       p[HF] p[HF]<.05
+2    Adv 0.5998292 0.01233767         * 1.443259 0.002039586         *
+####################
+
+# Note
+광고를 구분하는 변수 "adv" 와 개인의 특성을 구분하는 변수 "subject"는 분산분석 모형의 주요 변동 요인이 된다. 
+우리가 관심있는 변수는 광고효과를 나타내는 변수 "adv" 에 대한 효과 (또는 차이) 이지만 이러한 효과는 
+개인 특성을 나타내는 subject 변수안에서만 파악할 수 있다. 따라서 단순한 adv 효과는 진짜 Adv효과와 
+개인 특성을 나타내는 subject와 섞여 있으므로 이를 구분하는 과정이 필요하다. 
+Error(subject)는 adv에 대한 SSW 또는 SSE 안에서는 random effect 인 개인 특성 subject가 포함되어 있다는 의미이다.
+
+다시 말하면, subject는 adv를 크로스하면서 동일한 subject 안에서 adv의 효과(차이)가 보여지는 것이다.
+즉, subject 안에서 (within subject) 광고효과가 나타난다는 것이다.
+이와 같이 광고효과가 subject 안에서 나타나는 경우를 '광고효과는 subject를 통하여 반복측정 되었다' 라고 한다. 
+(Adv effect is repeated measure on subject). 
+그리고 표현을 "subject 내의 광고효과" 또는 "Adv within subject" 라고 한다.
+결국 개인의 특성을 나타내는 subject의 변동성을 제거한 후 순수한 광고효과를 측정하여 
+보다 정확한 결과를 얻고자 하는 것이 반복측정 실험설계의 주요 특징이라 볼 수 있다.
+
+R 분석결과를 살펴보면, adv에 대한 F-검정은 DFn (분자자유도)은 광고종류가 4가지 이므로 3, 
+DFd (분모자유도)는 총자료수가 16이므로 16-1(Intercept)-3(adv)-3(subject)=9가 되며 이는 
+adv*subject 자유도 3*3=9 같게 된다. SSn (분자의 제곱합) 은 adv에 대한 SS가 되며
+SSd (분모제곱합) 은 adv에 대한 F-검정을 위한 오차항이 된다.
+결과를 보면 광고에 따른 차이는 5%유의수준에서 통계적으로 유의하게 나타났다.
+
+다음으로 일반적인 분산분석에서 요구되는 등분산성의 가정에 더해서 반복측정 분산분석에서는
+동일한 subject내 관찰값에 대한 상관계수가 일정하다는 구형성(Sphericity) 가정이 추가적으로 요구된다.
+구형성 가정은 상관계수가 일정하다는 가정이지만 이는 그룹간 차이에 대한 분산이 일정하다는 가정과 
+동일한 의미를 가진다. paired t-test를 생각하면 보다 쉽게 이해할 수 있다.
+구형성 가정은 Mauchly's Test for Sphericity를 이용하여 점검할 수 있다. 
+등분산성+구형성이 합쳐져 복합대칭성이라고 한다. 
+
+Tukey HSD test는 반복측정 분석모형에서는 적용할 수 없지만, 일반 모형으로 접근한 두번째 방법 M2에서는 적용이 가능하다.
+즉, 반복측정 모형과 동일한 랜덤화블록 실험설계 분석모형을 설정하여 Tukey HSD Test 진행이 가능하다.
+
+TukeyHSD(M2, "adv")
+  Tukey multiple comparisons of means
+    95% family-wise confidence level
+
+Fit: aov(formula = score ~ adv + subject, data = df2)
+
+$adv
+           diff        lwr        upr     p adj
+Adv2-Adv1  3.75  1.0715929  6.4284071 0.0079818
+Adv3-Adv1  0.75 -1.9284071  3.4284071 0.8180385
+Adv4-Adv1  4.00  1.3215929  6.6784071 0.0053184
+Adv3-Adv2 -3.00 -5.6784071 -0.3215929 0.0284918
+Adv4-Adv2  0.25 -2.4284071  2.9284071 0.9907923
+Adv4-Adv3  3.25  0.5715929  5.9284071 0.0184983
+
+"pairwise t-tests with adjusted p-values"를 이용하여 어느 광고가 좋은지를 다중비교 하였다.
+Adjusted p-value 방법으로는 Bonferroni 방법 ("bonferroni") 이 있으며, 그 이외에
+Holm (1979) 방법 ("holm") (디폴트 방법), Hochberg (1988) 방법 ("hochberg"), Hommel (1988) 방법 
+("hommel"), Benjamini & Hochberg (1995) 방법 ("BH" or its alias "fdr"),  
+Benjamini & Yekutieli (2001) 방법 ("BY") 이 있다. 
+Output은 모든 가능한 쌍들의 차이에 대한 유의성을 나타내는 p-vaue가 테이블 형태(또는 메트릭스 형태)로 제공된다.
+
+with(df2, pairwise.t.test(score, adv, p.adjust.method="none", paired=T))
+
+        Pairwise comparisons using paired t tests 
+
+data:  score and adv 
+
+     Adv1   Adv2   Adv3  
+Adv2 0.0287 -      -     
+Adv3 0.3189 0.0052 -     
+Adv4 0.0220 0.8460 0.0319
+
+P value adjustment method: none 
+
+
+with(df2, pairwise.t.test(score, adv, p.adjust.method="holm", paired=T))
+
+        Pairwise comparisons using paired t tests 
+
+data:  score and adv 
+
+     Adv1  Adv2  Adv3 
+Adv2 0.115 -     -    
+Adv3 0.638 0.031 -    
+Adv4 0.110 0.846 0.115
+
+P value adjustment method: holm 
+
+
+결과가 상당히 가르게 나타나고 있는 사실을 확인할 수 있다. (그래도 Tukey's HSD 방법이 괜찮은 듯 함)
+
+#결과 설명
+An one-way repeated measures ANOVA uses the following null and alternative hypotheses:
+The null hypothesis (H0): μ1 = μ2 = μ3 = μ4 (the population means are all equal)
+The alternative hypothesis: (HA): at least one population mean is different from the rest
+In this example, the F test-statistic is 11.38 and the corresponding p-value is 0.00204. 
+Since this p-value is less than 0.05, we reject the null hypothesis and conclude that 
+there is a statistically significant difference in mean preference scores between the four different advertisements.
+
+#보고서 작성
+"An one-way repeated measures ANOVA was conducted on five individuals to examine the effect that 
+four different advertisements had on preference score.
+Results showed that the type of advertisements lead to statistically significant differences 
+in preference score (F(3, 9) = 11.38, p = 0.002) with significant level 0.05."
+
+
+### (참고) 비모수 분산분석: The Friedman Rank Sum Test
+단일요인 반복측정 분산분석 (One-way ANOVA with one repeated measure) 의 가정이 깨지는 경우 
+비모수 분석을 진행할 수 있는데 이를 Friedman Rank Sum Test 라고 한다.
+
+> friedman.test(score ~ adv | subject, data=df2)
+
+        Friedman rank sum test
+
+data:  score and adv and subject
+Friedman chi-squared = 10.231, df = 3, p-value = 0.0167
+
+
+### Two-Factor design with repeated measurement on One Facor (Chapter 25)
+
+다음과 같이 데이터를 재구성
+   score subject  time   group
+     80       1 time1 control
+     85       2 time1 control
+     83       3 time1 control
+     82       4 time1   trtmt
+     87       5 time1   trtmt
+     84       6 time1   trtmt
+     83       1 time2 control
+     86       2 time2 control
+     88       3 time2 control
+     94       4 time2   trtmt
+     93       5 time2   trtmt
+     98       6 time2   trtmt
+
+df3 = read.table("clipboard", h=T)
+
+df3$subject=as.factor(df3$subject); df3$time=as.factor(df3$time)
+df3$group=as.factor(df3$group)
+
+자료의 특성을 살펴보면 group 은 control 그룹과 trtmt 그룹으로 구분되면서 subject가
+크로스 하지 못하면서 (subject is nested within group) between-subject variable 이 되며, 
+time 에 따른 효과는 subject가 크로스를 하므로 반복측정 (repeated measurement)이 되어 
+within-subject variable 이 된다. 따라서 time 변수가 repeated measure 된 
+two-factor ANOVA 모형이 된다. 
+
+with(df3, boxplot(score ~ time + group) )
+title(main="Repeated Measure Sample Data")
+
+여기서는 "time" 과 "group" 의 상호작용효과를 파악하는 것이 주요 목적이므로 (Difference In Difference)
+두 변수의 주효과 (main effect) 와 상호작용효과 (interaction effect) 를 파악하여야 한다. 
+"time" 효과는 "within subjects" 에서 나타나고 "group" 효과는 "between subjects" 에서 나타난다. 
+
+#### (첫번째 방법)
+
+ezANOVA(df3, dv = .(score), wid = .(subject), within = .(time), between = .(group))
+
+**between은 지분되는 요인, within은 cross되는 요인**
+
+$ANOVA
+      Effect DFn DFd         F           p p<.05       ges
+2      group   1   4 11.836957 0.026282011     * 0.6357268
+3       time   1   4 26.265625 0.006862269     * 0.7292842
+4 group:time   1   4  8.265625 0.045240192     * 0.4588031
+
+aov() 함수를 사용하는 경우에는 ...
+subject가 time에 크로스를 하면서 random effect를 형성하여 Error(subject/time)으로 잡는다.
+
+#### (두번째 방법) > 옳지 않은 방법
+
+M3=aov(score ~ group * time + Error(subject/time), data=df3)
+summary(M3)
+
+Error: subject
+          Df Sum Sq Mean Sq F value Pr(>F)  
+group      1  90.75   90.75   11.84 0.0263 *
+Residuals  4  30.67    7.67                 
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Error: subject:time
+           Df Sum Sq Mean Sq F value  Pr(>F)   
+time        1 140.08  140.08  26.266 0.00686 **
+group:time  1  44.08   44.08   8.266 0.04524 * 
+Residuals   4  21.33    5.33                   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.
+
+##  그래프로 확인
+
+with(df3, interaction.plot(time, group, score, col = 1:2, lty=1, lwd=2))
+
+이 연구의 주요 목적은 group×time 을 나타내는 상호작용효과 (interaction effect)
+이므로 처리 그룹에 대한 처리효과 (treatment effect) 가 존재한다고 결론 내릴 수 있다.
+
+### Paired t-test
+이 경우 within subject 에 나타나는 time 변수가 2개의 수준을 가지므로 paired-t test 
+분석이 가능한다. 
+
+동일한 데이터를 새롭게 구성
+
+80 83 control
+85 86 control
+83 88 control
+82 94 trtmt
+87 93 trtmt
+84 98 trtmt
+
+(R 사용법) t.test(x, y = NULL, alternative = c("two.sided", "less", "greater"), mu = 0, 
+                 paired = FALSE, var.equal = FALSE, conf.level = 0.95)
+
+
+df4 = read.table("clipboard")
+df4$diff=df4$V2-df4$V1   # within subject 는 차이로 처리
+colnames(df4) = c("time1", "time2", "group", "diff")
+with(df4, t.test(diff[group =="control"], diff[group == "trtmt"], var.equal=TRUE))
+
+
+        Two Sample t-test
+
+data:  diff[V3 == "control"] and diff[V3 == "trtmt"]
+t = -2.875, df = 4, p-value = 0.04524
+alternative hypothesis: true difference in means is not equal to 0
+95 percent confidence interval:
+ -15.0705203  -0.2628131
+sample estimates:
+mean of x mean of y 
+  3.00000  10.66667 
+
+
+### 다변량 분산분석: MANOVA (Multivariate ANalysis Of VAriance)
+2요인에서 1요인 반복측정된 분산분석 (One-way ANOVA with one repeated measure) 문제는 
+다변량 분산분석 모형을 적용하여 분석이 가능하다. 이 경우 한 subject가 하나의 관측값을 형성하며 
+이를 기반으로 그룹간 차이를 분석하게 된다. 
+
+M4 = manova(cbind(time1, time2) ~ group, data=df4)
+summary(M4, test="Wilks")               # 결과가 조금 다르게 나타남~!
+
+          Df   Wilks approx F num Df den Df  Pr(>F)  
+group      1 0.16949   7.3501      2      3 0.06978 .
+Residuals  4                                         
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.
+
+
+
+--- Two-Factor design with repeated measurement on Two Facors (Chapter 25)
+
+ score  subject   time       type
+   65       1       A.M.   기존커피
+   72       2       A.M.   기존커피
+   90       3       A.M.   기존커피
+   70       1       A.M. 새로운커피
+   78       2       A.M. 새로운커피
+   97       3       A.M. 새로운커피
+   55       1       P.M.   기존커피
+   64       2       P.M.   기존커피
+   80       3       P.M.   기존커피
+   60       1       P.M. 새로운커피
+   68       2       P.M. 새로운커피
+   85       3       P.M. 새로운커피
+
+
+df5 = read.table("clipboard", h=T)
+df5$subject=as.factor(df5$subject); df5$time=as.factor(df5$time)
+df5$type=as.factor(df5$type)
+
+# 자료의 특성을 살펴보면 time 과 type 모두 subject가 크로스를 하므로 within-subject variable 
+이 된다. 따라서 time 과 type 모두가 repeated measure 된 two-factor ANOVA 모형이 된다. 
+
+(첫 번째 방법)
+
+ezANOVA(df5, dv = .(score), wid = .(subject), within = .(time, type))
+
+$ANOVA
+     Effect DFn DFd   F           p p<.05          ges
+2      time   1   2 300 0.003316759     * 0.1802884615
+3      type   1   2 256 0.003883510     * 0.0588776449
+4 time:type   1   2   4 0.183503419       0.0009765625
+
+
+aov()를 사용하는 경우는 R 에서는 Error(subject/(time*type)) 형태로 표현한다.
+
+M5 = aov(score ~ time * type + Error(subject/(time*type)), df5)
+summary(M5) 
+
+Error: subject
+          Df Sum Sq Mean Sq F value Pr(>F)
+Residuals  2   1361   680.3               
+
+Error: subject:time
+          Df Sum Sq Mean Sq F value  Pr(>F)   
+time       1    300     300     300 0.00332 **
+Residuals  2      2       1                   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Error: subject:type
+          Df Sum Sq Mean Sq F value  Pr(>F)   
+type       1  85.33   85.33     256 0.00388 **
+Residuals  2   0.67    0.33                   
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+
+Error: subject:time:type
+          Df Sum Sq Mean Sq F value Pr(>F)
+time:type  1 1.3333  1.3333       4  0.184
+Residuals  2 0.6667  0.3333               
+
+with(df5, interaction.plot(time, type, score,col = 1:2, lty=1, lwd=2))
+
+--- Three-Factor design with repeated measurement on Two Factors (추가)
+
+# 책에는 소개가 되어 있지 않지만, 2개 요인이 반복측정된 3요인 분산분석 모형을 생각할 수 있다.
+예를 들어, Factor1 변수가 subject를 크로스 하지 못하여 nested 되어 between subject 변수라 하고
+Factor2 와 Factor3 변수가 subject 를 크로스하여 within-subject variable 이라고 한다면...
+R 에서는 Error(subject/(Factor2*Factor3) 로 표현될 수 있다. 
+
+ezANOVA(da6, dv = .(y), wid = .(subject), between = .(factor1), within = .(factor2, factor3))
+또는
+aov(y ~ factor1*factor2*factor3 + Error(subject/(factor2*factor3)))
+
+
+--- Nested Designed ANOVA (추가)
+
+subject가 어떠한 A factor를 크로스 하지 못한다면 이를 '지분되었다' 라고 말하며
+"subject is nested within A factor" 또는 "A factor nested subject" 라고 표현하며 R에서는 
+A factor / subject 로 표현한다. 이 경우 A factor는 fixed effect의 첫 번째 factor가 되고,
+subject는 두 번째 요인의 random effect가 된다. 
+
+#### One-way Nested ANOVA
+
+상황: 3개의 기계에 각각 3명의 기술자가 투입되어 (총 9명 투입) 각 기술자가 4번의 작업을 통하여 작업량을 측정한 모형
+기술자(random effect)는 기계 (fixed effect)에 크로스하지 못하고 지분되어 있다.
+"Engineer is nested within 3 machines" 또는 "machine nested with Engineer" 라고 하며,
+R에서는 machine / engineer 로 표시
+
+prfm = c(13, 16, 16, 12, 15, 16, 19, 16, 15, 15, 12, 15,
+         19, 19, 20, 22, 23, 18, 16, 18, 19, 20, 21, 21,
+         21, 23, 24, 22, 25, 20, 20, 22, 24, 22, 25, 26)
+machine = c(rep(c('M1', 'M2', 'M3'), each=12)); machine=as.factor(machine)
+egneer = c(rep(1:9, each=4)); egneer=as.factor(egneer)
+
+M3 = aov(prfm ~ machine / egneer)
+summary(M3)
+
+(분석 결과)
+
+               Df Sum Sq Mean Sq F value   Pr(>F)    
+machine         2  372.7  186.33  53.238 4.27e-10 ***
+machine:egneer  6   31.8    5.31   1.516    0.211    
+Residuals      27   94.5    3.50                     
+---
+
+We can look at the p-value column to determine whether or not each factor has a statistically significant effect on performance.
+From the table above, we can see that machine has a statistically significant effect on performance (p-value < .05) 
+but engineer does not (p-value = 0.211).
+This tells us that if we’d like to increase performance, we should focus on the machine being used rather than 
+the individual engineer who is operating the machine.
+
+###   그림으로 확인
+
+df2=data.frame(prfm, machine, egneer)
+library(ggplot2)
+ggplot(df2, aes(x=egneer, y=prfm, fill=machine)) + geom_boxplot()
+
+
+

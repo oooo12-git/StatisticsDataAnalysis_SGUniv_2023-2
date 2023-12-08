@@ -1,0 +1,243 @@
+# 예제 8
+# install.packages("scatterplot3d")
+library(scatterplot3d)
+x1 = trunc(runif(10)*10)+1
+x2 = trunc(runif(10)*10)+11 
+y = 1+ 2*x1 + 3*x2 + rnorm(10, 0, 10)
+data.frame(x1, x2, y)
+M4 = lm(y ~ x1 + x2); M4
+G3d=scatterplot3d(x1,x2,y, angle=55, scale.y=0.8, pch=16, zlim=c(20,120), color ="red", main ="회귀 평면", grid=FALSE)
+G3d$plane3d(M4, lty.box = "solid")
+G3d$points3d(x1, x2, fitted(M4), col="blue", type="h", pch=16)
+
+# (참고) 예제로 생성된 교재에서 사용한 데이터 내용
+> data.frame(x1, x2, y)
+   x1 x2        y
+1   4 14 50.75980
+2   1 16 41.39093
+3   4 13 23.55423
+4   5 19 62.02147
+5   1 18 59.09995
+6   7 18 77.93622
+7  10 12 44.25575
+8   4 14 58.86981
+9   8 19 82.66984
+10 10 13 79.87974
+
+# 예제 9
+library(readxl)
+df1 = read_excel("아파트매매.xlsx", sheet='Data', range='B4:E30')
+FullModel = lm(Sales ~ . , df1)
+PartialModel1 = update(FullModel, .~.-Rooms)
+PartialModel2 = lm(Sales ~ Area , df1)
+NullModel = lm(Sales ~ 1 , df1)
+
+F1 = anova(FullModel); F1
+SSR = sum(F1[1:3,2]); SSR; MSR = SSR/3; MSR 
+Fvalue=MSR/F1[4,3]; 1-pf(Fvalue, 3,22)
+anova(NullModel, FullModel)
+
+summary(FullModel)$r.squared; summary(FullModel)$adj.r.squared; sigma(FullModel)^2; AIC(FullModel); BIC(FullModel)
+summary(PartialModel1)$r.squared; summary(PartialModel1)$adj.r.squared; sigma(PartialModel1)^2; AIC(PartialModel1); BIC(PartialModel1)
+summary(PartialModel2)$r.squared; summary(PartialModel2)$adj.r.squared; sigma(PartialModel2)^2; AIC(PartialModel2); BIC(PartialModel2)
+
+summary(FullModel) 
+anova(PartialModel2, FullModel) 
+
+predict(PartialModel1, newdata=data.frame(Dur=30, Area=32), interval="confidence")
+predict(PartialModel1, newdata=data.frame(Dur=30, Area=32), interval="prediction")
+
+# 예제 10
+
+x1=1:10; x2=21:30 
+y = 1 + 2*x1 + 3*x2 + rnorm(10, 0, 10)
+M5 = lm(y ~ x1 + x2); summary(M5) 
+
+# 예제 11
+
+# install.packages("PerformanceAnalytics")
+PerformanceAnalytics::chart.Correlation(df1) 
+car::vif(FullModel) 
+car::vif(PartialModel1) 
+
+# 다음 예제
+
+매출액 영업활동비용 영업사원수
+(억원)  (천만원)     (명) 
+
+   Sales SalesCost NSalesMan
+    22         8         6
+    23        10         7
+    18         7         5
+     9         2         2
+    14         4         3
+    20         6         4
+    21         7         4
+    18         6         3
+    16         4         3
+    19         6         3
+
+da2=read.table("clipboard", h=T)
+
+M5 = lm(Sales ~ SalesCost + NSalesMan, data=da2)
+summary(M5)
+signif(cor(da2),3) 
+
+# Assumption 1 : Model Specification Error Check (Linearity)
+crPlots(M5)  # Evaluate Nonlinearity: component + residual plot 
+     # Same as 'Partial Residual Plot' (xi) versus (bi xi + residual)
+ceresPlots(M5) # Ceres plots: Conditional Expectation Partial Residuals
+
+# Evaluate Collinearity
+library('car')
+vif(M5) # variance inflation factors 
+
+M6 = lm(Sales ~ SalesCost, data=da2) # Partial Model
+anova(M5, M6)
+
+layout(matrix(c(1,2,3,4),2,2)) # optional 4 graphs/page 
+   # same as 'par(mfrow=c(2,2))'
+plot(M6)
+
+--- Assumption Check in the Regression Model
+library(gvlma)
+gvlma(M6)
+
+car::durbinWatsonTest(M6)
+car::ncvTest(M6)
+shapiro.test(residuals(M6))
+
+par(mfrow=c(1,1))
+plot(da2$SalesCost, da2$Sales, pch=20, cex=1.2, xlab='영업활동비용',
+   ylab='매출액', main='영업활동비용과 매출액 관계')
+abline(M6, lwd=2)
+
+--- Regression with Dummy variables (Chapter 22)
+
+type=c("할인점","할인점","할인점","일반점","일반점",
+       "할인점","일반점","일반점","할인점","일반점")
+
+da3=cbind(da2, as.factor(type))
+
+model3 = lm(Sales ~ SalesCost*type, data=da3) # Without Parallel
+summary(model3)
+
+model4 = lm(Sales ~ SalesCost+type, data=da3) # With Parallel
+summary(model4)
+
+--- Model Building: Variable Selection (Chapter 22)
+
+Selecting a subset of X variables (or predictor) from a larger set 
+(e.g., stepwise selection) is a controversial topic. You can 
+perform stepwise selection (forward, backward, both) using the 
+stepAIC( ) function from the MASS package. 
+Selection of terms for deletion or inclusion is based on AIC
+(Akaike's information criterion). R defines AIC as
+
+      -2 maximized log-likelihood + 2 number of parameters
+
+stepAIC( ) performs stepwise model selection by exact AIC.
+
+# Stepwise Regression
+library(MASS)
+model5 = lm(Sales ~ SalesCost*NSalesMan*type, data=da3)
+step <- stepAIC(model5, direction="both")
+step$anova # display results
+
+--- A little more investigation in R
+pairs(da2)
+model2 = update(model1, .~.-NSalesMan) # If we want to delete one 
+                                         predictor at a time.
+step(model5, direction="backward")
+scope = formula(~SalesCost*NSalesMan*type)
+null = lm(Sales ~ 1, data=da3)
+step(null, scope, direction="forward")
+step(null, scope, direction="both")
+
+model7=lm(Sales ~ SalesCost*NSalesMan, data=da3)
+predict(model7, list(SalesCost=c(4,8), NSalesMan=c(3,6)), interval="conf")
+
+model7[[1]] # Coefficients
+model7[[2]] # Residuals
+sort(model7$resid)
+
+model7=lm(scale(Sales) ~ scale(SalesCost)*scale(NSalesMan),data=da3))
+summary(model7)
+
+--- All subset Regression (Extra topic)
+
+Alternatively, you can perform all-subsets regression using 
+the leaps() function from the leaps package. 
+In the following code nbest indicates the number of subsets of 
+each size to report. Here, the ten best models will be reported 
+for each subset size (1 predictor, 2 predictors, etc.).
+
+library(leaps)
+leaps=regsubsets(Sales~SalesCost*NSalesMan*type, data=da3, nbest=2)
+summary(leaps) # view results 
+
+plot(leaps,scale="r2") : # plot statistic by subset size 
+library(car)
+subsets(leaps, statistic="rsq")
+
+Other options for plot() are bic, Cp, and adjr2. Other options 
+for plotting with subset() are bic, cp, adjr2, and rss.
+
+--- Influential Diagonosis: Outlier+Leverage (Extra topic)
+
+# Assessing Outliers
+outlierTest(model1) # Bonferonni p-value for most extreme obs
+qqPlot(model1, main="QQ Plot") #qq plot for studentized resid 
+
+leveragePlots(model1) # Regression Leverage Plots
+   # Same as Added-Variable plots: (X|Others) versus (Y|Others) 
+   # added variable plots: 'av.Plots(model1)' R에서 곧 없어짐
+
+# Influential Observations : Cook's D
+Cook's distance measures the effect of deleting a given observation. 
+Data points with large residuals (outliers) and/or high leverage 
+may distort the outcome and accuracy of a regression. 
+Points with a large Cook's distance are considered to merit 
+closer examination in the analysis (if D > 4/(n-(k+1))).
+
+       Sum_j (yhat_j - yhat_j(-i))^2
+  Di = -----------------------------
+                 k   MSE
+
+cutoff <- 4/((nrow(da2)-length(model1$coefficients))) 
+plot(model1, which=4); abline(h=cutoff) 
+ 
+influencePlot(model1, id.method="identify", main="Influence Plot", 
+  sub="Circle size is proportial to Cook's Distance" ) # Influence Plot
+
+===== (논의 사항) =======
+
+df1=read.table("clipboard", h=T)
+lm(sales~area+rooms, da=df1)
+lm(sales~area, da=df1)
+lm(sales~rooms, da=df1)
+
+library(lavaan)
+M1 = ' # direct effect
+         sales ~ c*rooms
+       # mediator
+         area ~ a*rooms
+         sales ~ b*area
+       # indirect effect (a*b)
+         ab := a*b
+       # total effect
+         total := c + (a*b) '
+
+fit1 = sem(M1, data=df1)
+summary(fit1)
+# summary(fit_analysis, standardized=T, rsquare=T)
+
+library(semPlot)
+semPaths(fit1,
+   whatLabels="par", intercepts=TRUE, style="lisrel",
+   nCharNodes=0, nCharEdges=0, rotation=2, edge.label.position=.43,
+   edge.label.cex=0.9, curveAdjacent=TRUE, title=TRUE, 
+   layout="tree2", curvePivot=TRUE)
+
+
+

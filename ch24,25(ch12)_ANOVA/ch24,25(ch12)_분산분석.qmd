@@ -9,6 +9,7 @@ toc-depth: 5
 library(ggpubr)
 library(DescTools)
 library(readxl)
+library(car)
 ```
 
 ## 분산분석, 분산분석표, 분산분석 모형
@@ -58,7 +59,7 @@ df2 = stack(df1)
 df2
 ```
 
-#### ggpubr 패키지를 활용한 점도표
+#### 등분산성 확인  - ggpubr 패키지를 활용한 점도표
 
 ```{r}
 ggline(df2, x = "ind", y = "values", add = c("mean_sd", "jitter"), title = "Data in ANOVA model", ylab ="", xlab = "")
@@ -137,7 +138,7 @@ x4 = sample(x[-c(x1,x2,x3)],5) # 1에서 20까지의 숫자중 x1, x2, x3를 제
 x4
 ```
 
-### 예제 4
+### 예제 4 - 도시별 배추 가격
 
 ![](./images/3.png)
 
@@ -193,7 +194,7 @@ OneWay$coefficients
 분산분석을 통해 귀무가설(그룹간 평균이 같다)을 기각한 경우, 어느 그룹(수준,level)이 다른지 검정하는 것이 **사후검정**이다. 그리고 두 개 수준의 평균차이 분석을 여러번 하는 것이 **다중비교**이다. 다중비교를 통해 어떤 그룹이 비슷하고 다른지 확인하여 그룹들을 묶고 구분할 수 있다.
 :::
 
-### 예제5
+### 예제5 - 요일별 웹사이트 방문자수
 
 ![](./images/4.png)
 
@@ -308,9 +309,297 @@ DescTools::PostHocTest(M1, method = "bonferroni")
 
 ## 분산분석 가정에 대한 검토
 
+### 1. 모형에 대한 가정
+
+분산분석은 세 가지 모형 중 하나라고 생각하고 분석을 진행하기 때문에 이 모형에 맞는지에 대한 점검이 필요할 수 있다.
 
 
-## 일원배치 분산분석 부터...
+1) 수준별 평균모형
+
+$$X_{ij} = \mu_{j} + \epsilon_{ij}$$
+
+2) 효과모형
+
+$$ X_{ij} = \mu + \tau_j + \epsilon_{ij} $$
+3) 레퍼런스 그룹이 있는 효과 모형
+
+$$X_{ij} = \mu_1 + \tau_j + \epsilon_{ij}$$
+
+이러한 모형들은 모두 가법 모형(additive model)으로 매우 일반화된 모형이기 때문에 특별히 점검하진 않는다.
+
+### 2. 오차항의 독립성 검정
+
+대부분의 분산분석은 독립성 가정을 만족하기 때문에 심각하게 받아들이지는 않는다. 만약, 독립성 검정을 하고 싶다면, Durbin-Watson 검정을 한다.
+
+### 3. 오차항의 기대값이 0이라는 불편성에 대한 점검
+
+불편성은 데이터를 측정하는 과정에서 발생하는 오차를 검토하고 바이어스를 가질 가능성에 대해 검토한다.
+
+### 4. 오차항의 등분산성 가정
+
+등분산성 가정은 매우 중요하다.
+
+등분산성은 앞서 소개한 ggline() 함수를 이용하여 그래프로 먼저 확인해보는 것도 좋다.
+
+아래는 예제5의 요일별 웹사이트 방문자수의 등분산성을 확인하기 위해 그래프를 그린 것이다.
+
+```{r}
+#| label: ggline()을 이용한 등분산성 확인
+
+ggline(df2, x = "ind", y = "values", add = c("mean_sd", "jitter"), 
+       title = "요일별 웹사이트 방문자수", ylab ="# of visitors", xlab = "", ggtheme = theme_classic(base_family = "AppleGothic") )
+```
+
+그러나, 시각적 판단은 명확한 근거를 제시하지 못하므로 통계적 가설 검정을 진행한다.
+
+**모집단이 2개 이상으로 구성된 모분산에 대한 등분산성을 검정**하고자 한다면, Bartlett 검정, Levene 검정을 할 수 있다.
+
+만일 잔차 분포가 정규분포와 가깝거나, 종모양 형태면 Bartlett 검정이 좋은 것으로 알려져 있다.
+
+하지만, 잔차 분포의 비대칭도가 심하면, Levene 검정이 더 좋은 것으로 알려져 있다.
+
+두 검정 모두 귀무가설은 "모든 그룹(처리수준)에 대한 모분산은 같다"
+대립가설은 "모분산이 다른 최소한 한 개의 그룹이 있다."
+
+#### 잔차 분포
+
+예제 5의 잔차분포가 어떤지 확인하려면 아래와 같이 `density()`와 분산분석의 속성값 `M1$residuals`을 사용하여 plot 한다.
+
+```{r}
+#| label: 예제5 - 요일별 웹사이트 방문자수의 잔차 분포
+
+plot(density(M1$residuals),xlab = "",main = "residual distribution", lwd = 2)
+```
+
+잔차분포는 대칭 분포이면서, 종모양 형태이지만, 꼬리가 짧고 봉우리가 평평한 낮은 첨도 형태를 띈다.
+
+이런 경우 Bartlett test를 사용해도 괜찮으며, Levene test시 어떤 중심값을 사용해도 괜찮다.
+
+#### Bartlett test 잔차분포가 정규분포에 가까울 경우
+
+```{r}
+#| label: bartlett test - 예제5 등분산성 검정
+bartlett.test(values ~ ind, df2)
+```
+
+p-value가 매우 높으므로 데이터가 귀무가설을 강력하게 지지하고 있다고 볼 수 있다.
+
+#### Levene test 잔차분포가 매우 이상할 경우
+
+Levene 검정은 그룹별 데이터의 중심을 0으로 변환시킨 후 절대값을 취한 새로운 확률 변수 $Z_{ij}$를 사용한다.
+
+$Z_{ij}$는 자료의 산포도를 나타낸다. 
+
+$$Z_{ij} = |X_{ij} - \mu_j|$$
+
+여기서 $\mu_j$라고 표현했지만, 이를 중앙값, 절사평균을 사용하기도 한다.
+
+$Z_{ij}$를 분산분석하여 F 검정을 하는 방법이 Levene 검정이다.
+
+앞서 살펴본 잔차분포를 통해 어떤 $\mu_j$를 사용해도 괜찮다. R에서는 로버스트한 통계량인 중앙값을 디폴트로 사용한다.
+
+```{r}
+#| label: levene test
+
+car::leveneTest(M1) # 디폴트 center = median
+
+```
+
+p-value가 0.9845로 귀무가설(등분산성을 만족한다)을 강하게 지지한다.
+
+#### 이분산성 발견시
+
+##### 잔차에 대한 정규분포를 가정할 수 있다면...
+
+###### Welch 분산분석
+
+```{r}
+#| label: Welch 분산분석 oneway.test(), var.equal = FALSE
+
+oneway.test(values ~ ind, df2 ,var.equal = FALSE) # var.equal = FALSE 옵션은 디폴트값이므로 생략 가능
+
+```
+
+아래는 같은 데이터인 예제5를 일반 분산분석한 결과이다.
+```
+Analysis of Variance Table
+
+Response: values
+          Df Sum Sq Mean Sq F value    Pr(>F)    
+ind        6  37040  6173.3  26.511 2.516e-10 ***
+Residuals 28   6520   232.9                      
+---
+Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+```
+Welch의 분산분석을 통해서도 귀무가설을 기각(그룹간 평균이 다르다)할 수 있지만, p-value가 일반 분산분석에 비해, Welch 분산분석 결과가 높다. 이는 Welch의 분산분석이 잔차의 이분산성은 해결하지만 검정력은 다소 떨어뜨린다는 점을 알려준다.
+
+##### 잔차가 정규분포라 가정할 수 없다면...
+
+###### 비모수 검정 - Kruskal-Wallis 검정
+
+아웃라이어가 많은 경우에 사용하며, 대부분의 실제 데이터가 이러한 경향을 보이기 때문에, 비모수검정을 많이 사용하게 된다.
+
+Kruskal-Wallis 검정은 데이터를 rank로 변환하여 검정한다.(순위 기반) 때문에 아웃라이어에 의한 문제를 완화할 수 있다.(이와 비슷하게 ecdf를 사용하는 Normal Score 방법이 있다. Normal Score 방법은 모든 데이터를 표준 정규분포로 변환하므로, 표준화(Normalization)라 한다. Normalization은 최근 딥러닝의 각 뉴런에 적용되어 성능 향상에 기여하고 있다.)
+
+```{r}
+kruskal.test(values ~ ind, df2)
+```
+
+Welch의 분산분석 결과(아래)와 비교해 보면 p-value가 더 높다. 이는 검정력이 낮다는 것을 뜻한다.
+`F = 23.248, num df = 6.000, denom df = 12.416, p-value = 4.528e-06`
+
+Kruskal-Wallis 검정 후 유의성이 확인되면, 순위 기반으로 다중 비교를 할 수 있다. 보통 Wilcoxon 검정을 사용하며, R에서는 `pairwise.wilcox.test()`를 사용한다.
+
+##### 분산 안정화 변환
+
+로그, 로짓변환, 아크사인 변환등을 사용하여 분산을 안정화시키기도 한다.
+
+### 5. 정규성에 대한 가정 확인
+
+정규확률도 QQplot을 통해 검토하고, Shapiro-Wilk 검정을 통해 가설검정을 진행할 수 있다.
+
+```{r}
+
+#| label: 분산분석 잔차 qqplot 그리기
+
+ri = M1$residuals
+qqnorm(ri)
+qqline(ri,lwd=2)
+```
+
+qqplot이 계단 형식으로 나타나는 이유는 데이터 수집시에 만원단위로 끊어서 측정했기 때문이다.
+
+```{r}
+#| label: 분산분석 Shapiro wilk test
+
+shapiro.test(ri)
+
+```
+
+shapiro wilk test의 귀무가설은 "잔차가 정규분포를 따른다" 이다. 
+
+위 검정결과를 보면, p-value가 매우 작아서 유의수준 5%내에서 귀무가설을 기각하고 있다.
+
+그러나, 정규성은 분산분석에서 중요한 가정은 아닌것으로 알려져 있다. 
+
+분산분석은 어느 정도 표본 크기가 있으면, 중심극한 정리에 의해 정규분포로 근사할 수 있기 때문이다.
+
+## 잔차의 극단값 확인(boxplot)
+
+극단값은 그룹평균에도 영향을 주고, F검정 결과를 왜곡시킬 수 있기 때문에, 분산분석에서 극단값에 대한 검토는 매우 중요하다.
+
+극단값은 boxplot으로 확인 가능하다.
+
+```{r}
+#| label: 분산분석에서 잔차에 대한 극단값을 확인하기 위한 boxplot
+boxplot(ri ~ df2$ind, xlab = "", ylab = "residuals", range= 1.5, boxwex = 0.4) # boxwex는 상자폭을 0.4배 줄이는 옵션
+```
+
+위 1.5배 IQR 범위 (`range = 1.5`)에서는 극단값이 확인되지 않기 때문에, 0.3 IQR로 확인해보자. 이를 확인하는 R코드는 아래와 같다.
+
+```{r}
+Lo = quantile(ri,0.25)-0.3*IQR(ri)
+Up = quantile(ri,0.75)+0.3*IQR(ri)
+ri[(ri<Lo) | (ri>Up)]
+```
+이를 통해 극단값으로 판단한 잔차는 총 12개 이다.
+
+## 이원배치 분산분석
+
+독립변수가 두 개 인경우 이원배치 분산분석(two-way ANOVA)라고 한다.
+독립변수가 두 개가 되면서, 독립변수가 섞이면서 종속변수에 영향을 미치는데 이를 상호작용효과라고 한다.
+
+### 상호작용효과가 없을 경우
+
+#### 예제6 - 교육방법과 성별이 평가점수에 미치는 영향
+
+![](./images/6.png)
+
+```{r}
+#| label: 예제 6 데이터 입력
+
+X = c(70,85,82,90,88,89,48,46,50,59,54,56,50,55,48,52,66,53)
+Method = c(rep('Method1',6),rep('Method2',6),rep('Method3',6))
+Gender = rep(c(rep('Male',3), rep('Female',3)), 3)
+```
+
+```{r}
+#| label: 예제 6 분산분석(상호작용항 포함)
+
+M2 = aov(X ~ Method*Gender)
+anova(M2)
+```
+
+```
+              Df Sum Sq Mean Sq F value    Pr(>F)    
+Method:Gender  2   12.1    6.06  0.2449  0.786568
+```
+교육방법과 성별의 상호작용을 보면 p값이 귀무가설을 기각할 수 없는 높은 수치를 보여준다.
+
+모형의 간편성을 위해 상호작용 항을 없애고 분산 분석 하면 다음과 같은 결과를 얻는다.
+
+```{r}
+#| label: 예제 6 분산분석(상호작용항 제외)
+
+M3 = aov(X ~ Method + Gender)
+anova(M3)
+```
+
+MSE가 22.06으로 무의미한 상호작용항이 포함되어 있던 분산분석 결과(24.72, 아래 결과 확인)보다 낮은 MSE를 보여준다.
+
+```
+              Df Sum Sq Mean Sq F value    Pr(>F)    
+Residuals     12  296.7   24.72                      
+```
+
+##### interaction.plot()으로 상호작용효과 그래프로 확인하기
+
+```{r}
+#| label: 예제 6의 interaction.plot
+
+interaction.plot(Method, Gender, X, xlab = "")
+```
+
+위 그래프를 보면 성별에 관계없이 Method1의 X 평균이 크고 Method2의 X 평균이 작다. 
+
+이는 성별과 교육방법의 상호작용효과가 0에 가깝기 때문이다.
+
+### 상호작용효과가 유의한 경우
+
+#### 예제 7 - 교육방법과 성별이 평가점수에 미치는 영향
+
+```{r}
+#| label: 예제 7 데이터 입력 및 분산분석
+X = c(50,45,55,70,72,68,67,60,58,51,57,48)
+Method = c(rep('Method1',6),rep('Method2',6))
+Gender = rep(c(rep('Male',3), rep('Female',3)), 2)
+
+M4 = aov(X ~ Method*Gender)
+anova(M4)
+
+```
+
+예제6과 다르게 상호작용항이 통계적 유의성을 보인다.
+
+:::{.callout-note}
+이때, Method, Gender 항의 통계적 유의성이 없는 것으로 나타는데, 상호작용효과가 유의한 상태이므로 의미가 없다고 말해선 안된다!
+:::
+
+```{r}
+#| label: 예제 7 interaction.plot
+
+interaction.plot(Method, Gender, X, xlab='')
+
+```
+
+이렇게 상호작용효과가 있으면 cross되는 `interaction.plot()`이 그려진다. 
+
+Method1는 여성에게 더 좋은 평가점수를 나오게하고, Method2는 남성에게 더 좋은 평가점수가 나타나게 한다.
+
+즉, 여성에게는 Method1 교육방법을 사용하고, 남성에게는 Method2 교육방법을 적용시키는 것이 타당한 방법이라 할 수 있다.
+
+
+### 일원배치 분산분석 부터...
 --- One-way ANOVA (Chapter 24)
 
    score type

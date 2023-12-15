@@ -103,12 +103,13 @@ Residuals 의 Mean Square는 MSE에 해당한다. 앞에서 구한 MSR을 MSE로
 #| label: F검정 - anova(Fullmodel) 활용
 # F검정 - anova(Fullmodel) 활용
 
-Fvalue = MSR/F1[4,3]
+Fvalue = MSR/F1[4,3] # F1[4,3] = MSE
 Fvalue
 1-pf(Fvalue,3,22) # p값 계산
 
 ```
 
+NullModel과 FullModel의 비교 분산분석을 통해 FullModel의 회귀 계수의 통계적 유의성에 대한 F검정을 동일하게 진행할 수 있다.
 
 ```{r}
 #| label: NullModel과 FullModel에 대한 비교 분산분석
@@ -208,6 +209,8 @@ predict(PartialModel1, newdata=data.frame(Dur=30, Area=32), interval="prediction
 
 ### 예제 10 - Singularity 문제
 
+![](./images/예제10.png)
+
 :::{.callout-note}
 높은 다중공선성을 가진 독립변수가 발견되면 모형에서 제거하는 것이 기본적인 해결방법이다. 하지만, 제거하는 이유가 종속변수 Y를 예측하는 데 중요한 변수가 아니기 때문에 제거하는 것이 아니라, 최소제곱법이 회귀분석결과를 안정적으로 제공하지 못하게 만들기 때문에 제거하는 것이다. - 데이터 사이언스 통계학, 이군희, 2023
 :::
@@ -242,10 +245,13 @@ singularity 문제가 발생하지 않더라도 두 독립변수의 상관관계
 
 ## 다중공선성 검토 
 
-### 예제 11
+### 예제 11 - 상관관계 분석, VIF
+
+![](./images/예제11.png)
 
 ```{r}
 #| label: chart.Correlation 그래프를 통한 다중공선성 검토
+#| warning: false
 
 # chart.Correlation 그래프를 통한 다중공선성 검토
 PerformanceAnalytics::chart.Correlation(df1) 
@@ -266,6 +272,8 @@ chart.correlation을 통해 Rooms와 Area에 높은 상관관계가 있음을 �
 summary(PartialModel1)
 ```
 
+두 독립변수 모두 p값이 5%보다 작기 때문에 유의수준 5%에서 통계적으로 유의하다고 판단할 수 있다.
+
 ### 분산팽창인자(Variance Inflation Factor,VIF)
 
 분산팽창인자는 다음과 같다.
@@ -285,8 +293,11 @@ car::vif(PartialModel1)
 Rooms 변수는 위에서는 다중공선성 문제 때문에 제외했지만 VIF만 봤을 때에는 5보다 작기 때문에 다중공선성 문제가 있다고 의심하기 어렵다. 이 예제를 통해, VIF가 5보다 작더라도 다중공선성문제가 생길 수 있음을 명심해야 한다.
 :::
 
-### 다음 예제
+## 다음 예제(연구방법론에 있는 예제) - 다중회귀분석 가정에 대한 검토
 
+소매점에서 영업활동비용과 영업사원 수가 매출액에 미치는 영향을 분석하는 문제
+
+```
 매출액 영업활동비용 영업사원수
 (억원)  (천만원)     (명) 
 
@@ -301,6 +312,7 @@ Rooms 변수는 위에서는 다중공선성 문제 때문에 제외했지만 VI
     18         6         3
     16         4         3
     19         6         3
+```
 
 ```{r}
 #| label: 다음 예제 데이터 불러오기
@@ -323,7 +335,7 @@ summary(M5)
 signif(cor(da2),3) 
 ```
 
-#### Assumption 1 : Model Specification Error Check (Linearity) 선형성 가정 확인
+### Assumption 1 : Model Specification Error Check (Linearity) 선형성 가정 확인
 
 ```{r}
 #| label: crPlot 사용하여 선형성 확인
@@ -339,15 +351,13 @@ crPlots(M5)  # Evaluate Nonlinearity: component + residual plot
 ceresPlots(M5) # Ceres plots: Conditional Expectation Partial Residuals
 ```
 
-CeresPlot은 
-
 :::{.callout-caution}
 SalesCost와 Ceres 잔차를 보면 선형적으로 증가하는 관계를 보인다. 이는 Sales를 예측함에 있어서 SalesCost가 비선형적인 관계여야할지도 모른다는 점을 암시한다. 
 
 이에반해 NSalesMan은 Ceres 잔차와 특별한 관계가 없어보인다. 이는 NSalesMan이 Sales를 예측함에 있어서 선형적인 관계가 맞다는 것을 보여준다.
 :::
 
-#### Evaluate Collinearity 다중 공선성 확인
+### Evaluate Collinearity 다중 공선성 확인
 ```{r}
 #| label: vif 확인
 
@@ -384,7 +394,7 @@ plot(M6)
 QQ플롯은 정규성을 검정하는데 사용한다.가운데 점선 직선은 이론적인 정규분포일 때 데이터가 위치하는 곳을 뜻한다.
 
 
-#### Assumption Check in the Regression Model
+### Assumption Check in the Regression Model
 
 ```{r}
 #| label: gvlma - 일반화된 선형회귀 방정식의 가정에 대한 적절성 확인
@@ -435,7 +445,7 @@ abline(M6, lwd=2)
 ```
 
 
-#### Regression with Dummy variables (Chapter 22) 더미변수
+## Regression with Dummy variables (Chapter 22) 더미변수
 
 
 ```{r}
@@ -477,13 +487,15 @@ summary(model4)
 
 ```
 
+:::{.callout-note}
 두 결과를 비교해보면 상호작용을 고려한 model3의 $adj-R^2$가 0.9337로 model4의  $adj-R^2$(0.8332)보다 훨씬 좋다. 또한 상호작용항의 통계적 유의성도 있는 것으로 나타나기 때문에 평행성 가정을 하지 않은 회귀모형의 성능이 뛰어난 것으로 판단할 수 있다.
+:::
 
 ```
                      Estimate Std. Error t value Pr(>|t|)
 SalesCost:type할인점  -1.2250     0.3597  -3.406 0.014394 * 
 ```
-#### Model Building: Variable Selection (Chapter 22)
+## Model Building: Variable Selection (Chapter 22)
 
 Selecting a subset of X variables (or predictor) from a larger set 
 (e.g., stepwise selection) is a controversial topic. You can 
@@ -496,7 +508,7 @@ Selection of terms for deletion or inclusion is based on AIC
 
 stepAIC( ) performs stepwise model selection by exact AIC.
 
-##### Stepwise Regression 단계별 선택법(변수추가법 + 변수제거법)
+### Stepwise Regression 단계별 선택법(변수추가법 + 변수제거법)
 
 ```{r}
 #| label: model selection - 단계별 선택법
@@ -507,8 +519,12 @@ step <- stepAIC(model5, direction="both")
 step$anova # display results
 ```
 
+:::{.callout-note}
+`Sales ~ SalesCost + type + SalesCost:type` 이 가장 적합한 모형으로 선택되었다.
+:::
 
-##### A little more investigation in R
+
+### pairs(), 변수제거법, 변수추가법, predict()
 
 ```{r}
 #| label: pairs() - 변수간 관계를 볼 수 있는 산점도
@@ -545,9 +561,11 @@ step(null, scope, direction="both")
 # predict() 이용하여 추정값 및 신뢰구간 구하기
 
 model7=lm(Sales ~ SalesCost*NSalesMan, data=da3)
-predict(model7, list(SalesCost=c(4,8), NSalesMan=c(3,6)), interval="conf") 
+
 # SalesCost = 4이고, NSalesMan이 3일때, Sales의 추정값과 95% 신뢰구간
 # SalesCost = 8이고, NSalesMan이 6일때, Sales의 추정값과 95% 신뢰구간
+predict(model7, list(SalesCost=c(4,8), NSalesMan=c(3,6)), interval="conf") 
+
 ```
 
 ```{r}
@@ -569,7 +587,7 @@ summary(model7S)
 표준화하고 회귀분석한 결과와 그렇지 않은 결과의 $adj-R^2$는 같다. 그러나, 각 회귀계수의 통계적 유의성은 변동이 있었다. 
 
 
-##### All subset Regression (Extra topic)
+### All subset Regression (Extra topic)
 
 Alternatively, you can perform all-subsets regression using the **leaps()** function from the **leaps package.** In the following code **nbest** indicates the number of subsets of each size to report. Here, the ten best models will be reported for each subset size (1 predictor, 2 predictors, etc.).
 
@@ -581,9 +599,9 @@ summary(leaps) # view results
 Other options for plot() are bic, Cp, and adjr2. Other options 
 for plotting with subset() are bic, cp, adjr2, and rss.
 
-#### Influential Diagonosis: Outlier+Leverage (Extra topic)
+## Influential Diagonosis: Outlier+Leverage (Extra topic)
 
-##### Assessing Outliers
+### Assessing Outliers
 
 ```{r}
 #| label: outlierTest() = Bonferonni 방식으로 아웃라이어 탐색
@@ -604,51 +622,3 @@ leveragePlots(model3) # Regression Leverage Plots
    # added variable plots: 'av.Plots(model1)' R에서 곧 없어짐
 
 ```
-
-
-
-##### Influential Observations : Cook's D
-Cook's distance measures the effect of deleting a given observation. 
-Data points with large residuals (outliers) and/or high leverage 
-may distort the outcome and accuracy of a regression. 
-Points with a large Cook's distance are considered to merit 
-closer examination in the analysis (if D > 4/(n-(k+1))).
-
-       Sum_j (yhat_j - yhat_j(-i))^2
-  Di = -----------------------------
-                 k   MSE
-
-cutoff <- 4/((nrow(da2)-length(model1$coefficients))) 
-plot(model1, which=4); abline(h=cutoff) 
- 
-influencePlot(model1, id.method="identify", main="Influence Plot", 
-  sub="Circle size is proportial to Cook's Distance" ) # Influence Plot
-
-===== (논의 사항) =======
-
-df1=read.table("clipboard", h=T)
-lm(sales~area+rooms, da=df1)
-lm(sales~area, da=df1)
-lm(sales~rooms, da=df1)
-
-library(lavaan)
-M1 = ' # direct effect
-         sales ~ c*rooms
-       # mediator
-         area ~ a*rooms
-         sales ~ b*area
-       # indirect effect (a*b)
-         ab := a*b
-       # total effect
-         total := c + (a*b) '
-
-fit1 = sem(M1, data=df1)
-summary(fit1)
-# summary(fit_analysis, standardized=T, rsquare=T)
-
-library(semPlot)
-semPaths(fit1,
-   whatLabels="par", intercepts=TRUE, style="lisrel",
-   nCharNodes=0, nCharEdges=0, rotation=2, edge.label.position=.43,
-   edge.label.cex=0.9, curveAdjacent=TRUE, title=TRUE, 
-   layout="tree2", curvePivot=TRUE)

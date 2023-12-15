@@ -275,6 +275,26 @@ x 평균값이 2이기 때문에 x=2일때 신뢰구간 폭이 가장 작은 것
 
 ![](./images/no1-9.png)
 
+```{r}
+# 잔차분석 샘플그림
+df1 = read_excel('아파트매매.xlsx',range = 'B4:E30')
+
+Area <- df1$Area
+
+M1  = lm(Sales ~ Area, df1)
+Area_new <- data.frame(Area=seq(min(Area), max(Area), length.out=100))
+preds <- predict(M1, newdata=Area_new, interval="confidence")
+preds2<- predict(M1, newdata=Area_new, interval="prediction")
+
+
+plot(df1$Area, df1$Sales, pch=20, cex=1.2, col="deeppink", xlab='', ylab='', main='')
+abline(lm(Sales~Area, df1), col="black", lwd=2)
+abline(v=33.5, col="black")
+lines(Area_new$Area, preds[, "lwr"], col="blue", lty="dashed")
+lines(Area_new$Area, preds[, "upr"], col="blue", lty="dashed")
+lines(Area_new$Area, preds2[, "lwr"], col="blue")
+lines(Area_new$Area, preds2[, "upr"], col="blue")
+```
 
 ---
 
@@ -322,7 +342,7 @@ Global Stat, Link Function 항목을 보면 가정에 문제가 있는 것으로
 
 ### 4) 산점도 - 면적에 따른 아파트 매매가격 / 잔차와 예측값
 
-```{r 면적 - 아파트}
+```{r 면적 - 매매가격}
 plot(df1$Area,df1$Sales, pch =20, cex = 1.2, xlab = '면적 (단위: 평)', ylab = '매매가격 (단위: 백만원)', main = '면적에 따른 아파트 매매가격 변화', family= 'Noto Sans KR')
 abline(M1, lwd = 2)
 ```
@@ -339,6 +359,17 @@ abline(h=0)
 
 `fitted(M1)`은 M1 회귀분석에 의해 적합한, 즉 예측한 값을 보여준다.
 `rstudent(M1)`은 M1 회귀분석의 잔차를 외적 스튜던트화한다.
+
+:::{.callout-note}
+잔차를 잔차에 대한 표준편차로 나눠준 것을 표준화된 잔차(standardized residual) 혹은 스튜던트화된 잔차(studentized residual) 혹은 내적 스튜던트화된 잔차 라고 한다.$r_i$ `rstandard()`함수로 구할 수 있다. 
+:::
+
+잔차가 일반적인 잔차보다 극단적으로 크다면, 이는 극단값으로 볼 수 있다. 그래서 스튜던트화된 잔차는 원래 표준편차가 1이어야 하지만,  +-2, +-3 이상이면, 극단값으로 판단할 수 있다. 
+
+내적 스튜던트화된 잔차는 잔차 $e_i = y_i-\hat{y_i}$를 자신의 표준편차 $s(e_i)$로 나누기 때문에 독립성을 유지하지 못한다. 이러한 한계점을 넘기 위해 제시된 잔차가 외적 스튜던트화된 잔차이다.
+
+외적 스튜던트화된 잔차 $r_{(-i)}$ 는 잔차와 표준오차의 독립성을 만들기 위해 자신(잔차)의 표준편차를 제외한 표준오차의 추정량($s_{(-i)}(e_i)$)을 사용한다. `rstudent`함수를 통해 알 수 있다. 계산량에 부담이 없는 선에선 외적 스튜던트화된 잔차를 사용하는 것이 좋다.
+
 
 ### 5) 극단값, 레버리지, DFFITS통계량, Cooks' D 통계량
 
